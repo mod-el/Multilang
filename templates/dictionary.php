@@ -1,11 +1,11 @@
 <script type="text/javascript">
 	window.editWord = function(field, k, l){
 		field.style.background = '#DDD';
-		ajax(function(r){
+		ajax('<?=$this->getUrl()?>', '', 'k='+encodeURIComponent(k)+'&l='+encodeURIComponent(l)+'&v='+encodeURIComponent(field.getValue())+'&c_id='+c_id).then(function(r){
 			field.style.background = '#FFF';
 			if(r!=='ok')
 				alert(r);
-		}, '<?=$this->getUrl()?>', '', 'k='+encodeURIComponent(k)+'&l='+encodeURIComponent(l)+'&v='+encodeURIComponent(field.getValue())+'&c_id='+c_id);
+		});
 	};
 
 	window.newWord = function(){
@@ -15,7 +15,7 @@
 			    words[el.getAttribute('data-lang')] = el.getValue();
         });
 
-		return ajax(false, adminPrefix+'model-dictionary', '', 'c_id='+c_id+'&k='+encodeURIComponent(_('#new-word-k').getValue())+'&words='+encodeURIComponent(JSON.stringify(words))).then(function(){
+		return ajax(adminPrefix+'model-dictionary', '', 'c_id='+c_id+'&k='+encodeURIComponent(_('#new-word-k').getValue())+'&words='+encodeURIComponent(JSON.stringify(words))).then(function(){
 			return loadAdminPage(['model-dictionary']);
         });
 	};
