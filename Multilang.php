@@ -1,7 +1,8 @@
-<?php
-namespace Model;
+<?php namespace Model\Multilang;
 
-class Multilang extends Module{
+use Model\Core\Module;
+
+class Multilang extends Module {
 	public $lang;
 	public $langs;
 	public $tables = array();
@@ -56,9 +57,9 @@ class Multilang extends Module{
 
 		$this->model->addPrefixMaker('Multilang');
 
-		if(!isset(Globals::$data['adminAdditionalPages']))
-			Globals::$data['adminAdditionalPages'] = [];
-		Globals::$data['adminAdditionalPages'][] = [
+		if(!isset(\Model\Core\Globals::$data['adminAdditionalPages']))
+			\Model\Core\Globals::$data['adminAdditionalPages'] = [];
+		\Model\Core\Globals::$data['adminAdditionalPages'][] = [
 			'name' => 'Dictionary',
 			'controller' => 'ModElDictionary',
 			'rule' => 'model-dictionary'

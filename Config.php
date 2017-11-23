@@ -1,7 +1,8 @@
-<?php
-namespace Model;
+<?php namespace Model\Multilang;
 
-class Multilang_Config extends Module_Config {
+use Model\Core\Module_Config;
+
+class Config extends Module_Config {
 	protected $name = 'Multilang';
 
 	public function install(array $data=[]){
