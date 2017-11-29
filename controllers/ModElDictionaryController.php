@@ -1,5 +1,5 @@
 <?php
-class ModElDictionaryController extends \Model\AdminController{
+class ModElDictionaryController extends \Model\Admin\AdminController{
 	function customize(){
 		$this->viewOptions['template'] = INCLUDE_PATH.'model/Multilang/templates/dictionary';
 	}
