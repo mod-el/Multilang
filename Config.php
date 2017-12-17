@@ -3,9 +3,14 @@
 use Model\Core\Module_Config;
 
 class Config extends Module_Config {
+	/** @var string */
 	protected $name = 'Multilang';
 
-	public function install(array $data=[]){
+	/**
+	 * @param array $data
+	 * @return bool
+	 */
+	public function install(array $data = []){
 		return $this->model->_Db->query('CREATE TABLE IF NOT EXISTS `zk_dictionary` (
 		  `id` int(11) NOT NULL AUTO_INCREMENT,
 		  `lang` char(2) NOT NULL,
@@ -15,11 +20,22 @@ class Config extends Module_Config {
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;');
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getRules(){
 		$config = $this->retrieveConfig();
-
 		$rules = [];
-		if($config){
+
+		if($config and is_array($config)){
+			$config = array_merge([
+				'langs' => [],
+				'tables'=> [],
+				'default' =>'it',
+				'fallback' => true,
+				'type' => 'url',
+			], $config);
+
 			if($config['type']=='url'){
 				foreach($config['langs'] as $l){
 					if($l==$config['default'])
@@ -30,8 +46,8 @@ class Config extends Module_Config {
 		}
 
 		return [
-			'rules'=>$rules,
-			'controllers'=>[],
+			'rules' => $rules,
+			'controllers' => [],
 		];
 	}
 }
