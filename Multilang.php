@@ -6,8 +6,8 @@ use Model\Core\Globals;
 class Multilang extends Module {
 	public $lang;
 	public $langs;
-	public $tables = array();
-	public $options = array();
+	public $tables = [];
+	public $options = [];
 	private $dictionary = false;
 
 	/**
@@ -35,16 +35,16 @@ class Multilang extends Module {
 		if($this->options['fallback']===true)
 			$this->options['fallback'] = $this->options['default'];
 
-		foreach($this->options['tables'] as $mlt=>$ml){
+		foreach($this->options['tables'] as $mlt => $ml){
 			if(!isset($ml['fields']))
-				$ml = array('fields'=>$ml);
+				$ml = ['fields' => $ml];
 
-			$this->tables[$mlt] = array_merge(array(
+			$this->tables[$mlt] = array_merge([
 				'keyfield' => 'parent',
 				'lang' => 'lang',
 				'suffix' => '_texts',
 				'fields' => [],
-			), $ml);
+			], $ml);
 		}
 
 		if(!in_array($this->options['type'], ['url', 'session']))
