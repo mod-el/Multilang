@@ -1,5 +1,8 @@
-<?php
-class ModElDictionaryController extends \Model\Admin\AdminController{
+<?php namespace Model\Multilang\Controllers\Admin;
+
+use Model\Admin\Controllers\AdminController;
+
+class ModElDictionaryController extends AdminController{
 	function customize(){
 		$this->viewOptions['template-module'] = 'Multilang';
 		$this->viewOptions['template'] = 'dictionary';

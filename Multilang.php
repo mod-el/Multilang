@@ -1,6 +1,7 @@
 <?php namespace Model\Multilang;
 
 use Model\Core\Module;
+use Model\Core\Globals;
 
 class Multilang extends Module {
 	public $lang;
@@ -57,9 +58,9 @@ class Multilang extends Module {
 
 		$this->model->addPrefixMaker('Multilang');
 
-		if(!isset(\Model\Core\Globals::$data['adminAdditionalPages']))
-			\Model\Core\Globals::$data['adminAdditionalPages'] = [];
-		\Model\Core\Globals::$data['adminAdditionalPages'][] = [
+		if(!isset(Globals::$data['adminAdditionalPages']))
+			Globals::$data['adminAdditionalPages'] = [];
+		Globals::$data['adminAdditionalPages'][] = [
 			'name' => 'Dictionary',
 			'controller' => 'ModElDictionary',
 			'rule' => 'model-dictionary'
@@ -99,9 +100,9 @@ class Multilang extends Module {
 			$this->setLang($rule);
 			array_shift($request);
 			return [
-				'controller'=>false,
-				'prefix'=>$rule,
-				'redirect'=>$request,
+				'controller' => false,
+				'prefix' => $rule,
+				'redirect' => $request,
 			];
 		}else{
 			$this->model->error('Language not recognized.');
