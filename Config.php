@@ -25,9 +25,17 @@ class Config extends Module_Config {
 	 */
 	public function getRules(){
 		$config = $this->retrieveConfig();
-
 		$rules = [];
-		if($config){
+
+		if($config and is_array($config)){
+			$config = array_merge([
+				'langs' => [],
+				'tables'=> [],
+				'default' =>'it',
+				'fallback' => true,
+				'type' => 'url',
+			], $config);
+
 			if($config['type']=='url'){
 				foreach($config['langs'] as $l){
 					if($l==$config['default'])
