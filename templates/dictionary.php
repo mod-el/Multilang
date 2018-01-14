@@ -1,7 +1,7 @@
 <script type="text/javascript">
 	window.editWord = function(field, k, l){
 		field.style.background = '#DDD';
-		ajax('<?=$this->getUrl()?>', '', 'k='+encodeURIComponent(k)+'&l='+encodeURIComponent(l)+'&v='+encodeURIComponent(field.getValue())+'&c_id='+c_id).then(function(r){
+		ajax('<?=$this->getUrl()?>', '', 'k='+encodeURIComponent(k)+'&l='+encodeURIComponent(l)+'&v='+encodeURIComponent(field.getValue(true))+'&c_id='+c_id).then(function(r){
 			field.style.background = '#FFF';
 			if(r!=='ok')
 				alert(r);
@@ -12,10 +12,10 @@
 		var words = {};
 		_('#new-word').querySelectorAll('input').forEach(function(el){
 			if(el.getAttribute('data-lang'))
-			    words[el.getAttribute('data-lang')] = el.getValue();
+			    words[el.getAttribute('data-lang')] = el.getValue(true);
         });
 
-		return ajax(adminPrefix+'model-dictionary', '', 'c_id='+c_id+'&k='+encodeURIComponent(_('#new-word-k').getValue())+'&words='+encodeURIComponent(JSON.stringify(words))).then(function(){
+		return ajax(adminPrefix+'model-dictionary', '', 'c_id='+c_id+'&k='+encodeURIComponent(_('#new-word-k').getValue(true))+'&words='+encodeURIComponent(JSON.stringify(words))).then(function(){
 			return loadAdminPage(['model-dictionary']);
         });
 	};
