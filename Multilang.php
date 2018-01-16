@@ -20,7 +20,7 @@ class Multilang extends Module
 	 * @param array $options
 	 * @throws \Model\Core\Exception
 	 */
-	public function init($options = [])
+	public function init(array $options)
 	{
 		$config = $this->retrieveConfig();
 
@@ -128,7 +128,7 @@ class Multilang extends Module
 	 * @return array|bool|string
 	 * @throws \Model\Core\Exception
 	 */
-	public function getController(array $request, $rule)
+	public function getController(array $request, string $rule)
 	{
 		if ($this->options['type'] == 'url' and in_array($rule, $this->langs) and $this->options['default'] != $rule and $request[0] == $rule) {
 			$this->setLang($rule);
