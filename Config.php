@@ -11,7 +11,7 @@ class Config extends Module_Config
 	 * @param array $data
 	 * @return bool
 	 */
-	public function install(array $data = [])
+	public function install(array $data = []): bool
 	{
 		return (bool)file_put_contents(INCLUDE_PATH . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'Multilang' . DIRECTORY_SEPARATOR . 'dictionary.php', "<?php\n\$this->>dictionary = [];\n");
 	}
@@ -51,7 +51,7 @@ class Config extends Module_Config
 	/**
 	 * @return bool
 	 */
-	public function makeCache()
+	public function makeCache(): bool
 	{
 		if ($this->model->isLoaded('Multilang')) {
 			$this->model->_Multilang->checkAndInsertWords('multilang', [
