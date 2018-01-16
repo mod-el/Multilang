@@ -13,19 +13,13 @@ class Config extends Module_Config
 	 */
 	public function install(array $data = [])
 	{
-		return $this->model->_Db->query('CREATE TABLE IF NOT EXISTS `zk_dictionary` (
-		  `id` int(11) NOT NULL AUTO_INCREMENT,
-		  `lang` char(2) NOT NULL,
-		  `k` varchar(100) NOT NULL,
-		  `v` text NOT NULL,
-		  PRIMARY KEY (`id`)
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8;');
+		return (bool)file_put_contents(INCLUDE_PATH . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'Multilang' . DIRECTORY_SEPARATOR . 'dictionary.php', "<?php\n\$this->>dictionary = [];\n");
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getRules() : array
+	public function getRules(): array
 	{
 		$config = $this->retrieveConfig();
 		$rules = [];
@@ -52,5 +46,29 @@ class Config extends Module_Config
 			'rules' => $rules,
 			'controllers' => [],
 		];
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function makeCache()
+	{
+		if ($this->model->isLoaded('Multilang')) {
+			$this->model->_Multilang->checkAndInsertWords('multilang', [
+				'dictionary' => [
+					'it' => 'Dizionario',
+					'en' => 'Dictionary',
+				],
+				'label' => [
+					'it' => 'Label',
+					'en' => 'Label',
+				],
+				'insert' => [
+					'it' => 'Inserisci',
+					'en' => 'Insert',
+				],
+			]);
+		}
+		return true;
 	}
 }

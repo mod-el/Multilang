@@ -5,10 +5,15 @@ use Model\Core\Globals;
 
 class Multilang extends Module
 {
+	/** @var string */
 	public $lang;
+	/** @var string[] */
 	public $langs;
+	/** @var array[] */
 	public $tables = [];
+	/** @var array */
 	public $options = [];
+	/** @var array */
 	private $dictionary;
 
 	/**
@@ -88,13 +93,14 @@ class Multilang extends Module
 	/**
 	 * @return array
 	 */
-	public function getDictionary() : array
+	public function getDictionary(): array
 	{
 		if ($this->dictionary === null) {
 			$this->dictionary = [];
-			$dataset = $this->model->_Db->query('SELECT * FROM zk_dictionary WHERE lang = ' . $this->model->_Db->quote($this->lang));
-			foreach ($dataset as $d)
-				$this->dictionary[$d['k']] = $d['v'];
+
+			$dictionaryFile = INCLUDE_PATH . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'Multilang' . DIRECTORY_SEPARATOR . 'dictionary.php';
+			if (file_exists($dictionaryFile))
+				require($dictionaryFile);
 		}
 
 		return $this->dictionary;
@@ -161,5 +167,134 @@ class Multilang extends Module
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * @param string $idx
+	 * @param array $words
+	 * @param string $accessLevel
+	 */
+	public function checkAndInsertWords(string $idx, array $words, string $accessLevel = 'root')
+	{
+		$this->getDictionary();
+
+		if (!isset($this->dictionary[$idx])) {
+			$this->dictionary[$idx] = [
+				'words' => [],
+			];
+		}
+
+		$this->dictionary[$idx]['accessLevel'] = $accessLevel;
+
+		$words = $this->normalizeLangsInWords($words);
+
+		foreach ($words as $w => $langs) {
+			if (!isset($this->dictionary[$idx]['words'][$w]))
+				$this->dictionary[$idx]['words'][$w] = $langs;
+			else
+				$this->dictionary[$idx]['words'][$w] = array_merge($langs, $this->dictionary[$idx]['words'][$w]);
+		}
+
+		$this->saveDictionary();
+	}
+
+	/**
+	 * @param array $words
+	 * @return array
+	 */
+	public function normalizeLangsInWords(array $words): array
+	{
+		foreach ($words as $w => $langs) {
+			$default = $langs[$this->options['default']] ?? $langs['en'] ?? '';
+			foreach ($this->langs as $l) {
+				if (!isset($langs[$l]))
+					$words[$w][$l] = $default;
+			}
+		}
+
+		return $words;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function saveDictionary(): bool
+	{
+		if (!$this->dictionary === null)
+			return false;
+
+		$dictionaryFile = INCLUDE_PATH . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'Multilang' . DIRECTORY_SEPARATOR . 'dictionary.php';
+		if (!is_dir(dirname($dictionaryFile)))
+			mkdir(dirname($dictionaryFile), 0777, true);
+
+		$this->trigger('changedDictionary');
+
+		return (bool)file_put_contents($dictionaryFile, "<?php\n\$this->dictionary = " . var_export($this->dictionary, true) . ";\n");
+	}
+
+	/**
+	 * @param string $section
+	 * @param string $word
+	 * @param string $lang
+	 * @param string $value
+	 * @return bool
+	 * @throws \Model\Core\Exception
+	 */
+	public function updateWord(string $section, string $word, string $lang, string $value): bool
+	{
+		$this->getDictionary();
+		if (!isset($this->dictionary[$section]['words'][$word]))
+			$this->model->error('Word not found');
+
+		$this->dictionary[$section]['words'][$word][$lang] = $value;
+		return $this->saveDictionary();
+	}
+
+	/**
+	 * @param string $word
+	 * @param string|null $lang
+	 * @return string
+	 * @throws \Model\Core\Exception
+	 */
+	public function word(string $word, string $lang = null): string
+	{
+		if (!$lang)
+			$lang = $this->lang;
+		if (!in_array($lang, $this->langs))
+			$this->model->error('Unsupported lang ' . $lang);
+
+		$word = explode('.', $word);
+		if (count($word) > 2)
+			$this->model->error('There can\'t be more than one dot (.) character in dictionary word');
+
+		$dictionary = $this->getDictionary();
+
+		if (count($word) == 1) {
+			foreach ($dictionary as $sectionIdx => $section) {
+				if (isset($section['words'][$word[0]]))
+					return $section['words'][$word[0]][$lang] ?? '';
+			}
+
+			return '';
+		} else {
+			if (!isset($dictionary[$word[0]]))
+				$this->model->error('There is no dictionary section named "' . $word[0] . '"');
+
+			return $dictionary[$word[0]]['words'][$word[1]][$lang] ?? '';
+		}
+	}
+
+	/**
+	 * @param string $section
+	 * @return bool
+	 */
+	public function isUserAuthorized(string $section): bool
+	{
+		$this->getDictionary();
+
+		if (!isset($this->dictionary[$section]))
+			return false;
+
+		return (bool)($this->dictionary[$section]['accessLevel'] === 'user' or DEBUG_MODE);
 	}
 }
