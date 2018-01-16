@@ -13,7 +13,7 @@ class ModElDictionaryController extends AdminController
 
 	public function post()
 	{
-		if (checkCsrf() and isset($_POST['section'], $_POST['word'], $_POST['l'], $_POST['v'])) {
+		if ($this->model->_CSRF->checkCsrf() and isset($_POST['section'], $_POST['word'], $_POST['l'], $_POST['v'])) {
 			try {
 				if (!$this->model->_Multilang->isUserAuthorized($_POST['section']))
 					$this->model->error('Unauthorized');
@@ -23,7 +23,7 @@ class ModElDictionaryController extends AdminController
 			} catch (Exception $e) {
 				die($e->getMessage());
 			}
-		} elseif (checkCsrf() and isset($_POST['section'], $_POST['word'], $_POST['words'])) {
+		} elseif ($this->model->_CSRF->checkCsrf() and isset($_POST['section'], $_POST['word'], $_POST['words'])) {
 			try {
 				if (!$this->model->_Multilang->isUserAuthorized($_POST['section']))
 					$this->model->error('Unauthorized');
