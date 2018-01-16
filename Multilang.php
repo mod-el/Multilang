@@ -9,7 +9,7 @@ class Multilang extends Module
 	public $langs;
 	public $tables = [];
 	public $options = [];
-	private $dictionary = false;
+	private $dictionary;
 
 	/**
 	 * @param array $options
@@ -77,7 +77,7 @@ class Multilang extends Module
 	 * @param string $l
 	 * @return bool
 	 */
-	private function setLang($l)
+	private function setLang(string $l): bool
 	{
 		if (!in_array($l, $this->langs))
 			return false;
@@ -86,11 +86,11 @@ class Multilang extends Module
 	}
 
 	/**
-	 * @return array|bool
+	 * @return array
 	 */
-	public function getDictionary()
+	public function getDictionary() : array
 	{
-		if ($this->dictionary === false) {
+		if ($this->dictionary === null) {
 			$this->dictionary = [];
 			$dataset = $this->model->_Db->query('SELECT * FROM zk_dictionary WHERE lang = ' . $this->model->_Db->quote($this->lang));
 			foreach ($dataset as $d)
@@ -138,10 +138,10 @@ class Multilang extends Module
 	}
 
 	/**
-	 * @param $table
+	 * @param string $table
 	 * @return null|string
 	 */
-	public function getTableFor($table)
+	public function getTableFor(string $table)
 	{
 		if (array_key_exists($table, $this->tables)) {
 			return $table . $this->tables[$table]['suffix'];
@@ -151,10 +151,10 @@ class Multilang extends Module
 	}
 
 	/**
-	 * @param $table
+	 * @param string $table
 	 * @return mixed|null
 	 */
-	public function getTableOptionsFor($table)
+	public function getTableOptionsFor(string $table)
 	{
 		if (array_key_exists($table, $this->tables)) {
 			return $this->tables[$table];

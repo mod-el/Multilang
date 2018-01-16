@@ -25,7 +25,7 @@ class Config extends Module_Config
 	/**
 	 * @return array
 	 */
-	public function getRules()
+	public function getRules() : array
 	{
 		$config = $this->retrieveConfig();
 		$rules = [];
