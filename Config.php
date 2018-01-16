@@ -2,7 +2,8 @@
 
 use Model\Core\Module_Config;
 
-class Config extends Module_Config {
+class Config extends Module_Config
+{
 	/** @var string */
 	protected $name = 'Multilang';
 
@@ -10,35 +11,31 @@ class Config extends Module_Config {
 	 * @param array $data
 	 * @return bool
 	 */
-	public function install(array $data = []){
-		return $this->model->_Db->query('CREATE TABLE IF NOT EXISTS `zk_dictionary` (
-		  `id` int(11) NOT NULL AUTO_INCREMENT,
-		  `lang` char(2) NOT NULL,
-		  `k` varchar(100) NOT NULL,
-		  `v` text NOT NULL,
-		  PRIMARY KEY (`id`)
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8;');
+	public function install(array $data = [])
+	{
+		return (bool)file_put_contents(INCLUDE_PATH . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'Multilang' . DIRECTORY_SEPARATOR . 'dictionary.php', "<?php\n\$this->>dictionary = [];\n");
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getRules(){
+	public function getRules(): array
+	{
 		$config = $this->retrieveConfig();
 		$rules = [];
 
-		if($config and is_array($config)){
+		if ($config and is_array($config)) {
 			$config = array_merge([
 				'langs' => [],
-				'tables'=> [],
-				'default' =>'it',
+				'tables' => [],
+				'default' => 'it',
 				'fallback' => true,
 				'type' => 'url',
 			], $config);
 
-			if($config['type']=='url'){
-				foreach($config['langs'] as $l){
-					if($l==$config['default'])
+			if ($config['type'] == 'url') {
+				foreach ($config['langs'] as $l) {
+					if ($l == $config['default'])
 						continue;
 					$rules[$l] = $l;
 				}
@@ -49,5 +46,29 @@ class Config extends Module_Config {
 			'rules' => $rules,
 			'controllers' => [],
 		];
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function makeCache()
+	{
+		if ($this->model->isLoaded('Multilang')) {
+			$this->model->_Multilang->checkAndInsertWords('multilang', [
+				'dictionary' => [
+					'it' => 'Dizionario',
+					'en' => 'Dictionary',
+				],
+				'label' => [
+					'it' => 'Label',
+					'en' => 'Label',
+				],
+				'insert' => [
+					'it' => 'Inserisci',
+					'en' => 'Insert',
+				],
+			]);
+		}
+		return true;
 	}
 }
