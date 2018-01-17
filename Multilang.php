@@ -6,7 +6,7 @@ use Model\Core\Globals;
 class Multilang extends Module
 {
 	/** @var string */
-	public $lang;
+	public $lang = null;
 	/** @var string[] */
 	public $langs;
 	/** @var array[] */
@@ -22,40 +22,7 @@ class Multilang extends Module
 	 */
 	public function init(array $options)
 	{
-		$config = $this->retrieveConfig();
-
-		$this->options = array_merge([
-			'langs' => [],
-			'tables' => [],
-			'default' => 'it',
-			'fallback' => true,
-			'type' => 'url',
-		], $config);
-
-		$this->options = array_merge($this->options, $options);
-
-		$this->langs = $this->options['langs'];
-		if (empty($this->langs))
-			$this->model->error('Cannot load Multilang module, at least one language has to be specified.');
-
-		$this->lang = $this->options['default'];
-		if ($this->options['fallback'] === true)
-			$this->options['fallback'] = $this->options['default'];
-
-		foreach ($this->options['tables'] as $mlt => $ml) {
-			if (!isset($ml['fields']))
-				$ml = ['fields' => $ml];
-
-			$this->tables[$mlt] = array_merge([
-				'keyfield' => 'parent',
-				'lang' => 'lang',
-				'suffix' => '_texts',
-				'fields' => [],
-			], $ml);
-		}
-
-		if (!in_array($this->options['type'], ['url', 'session']))
-			die('Unknown type for Multilang module');
+		$this->reloadConfig($options);
 
 		if ($this->options['type'] == 'session') {
 			if (isset($_GET['mlang']) and in_array($_GET['mlang'], $this->langs))
@@ -76,6 +43,54 @@ class Multilang extends Module
 			'controller' => 'ModElDictionary',
 			'rule' => 'model-dictionary'
 		];
+	}
+
+	/**
+	 * @param array $options
+	 * @return bool
+	 * @throws \Model\Core\Exception
+	 */
+	public function reloadConfig(array $options = []): bool
+	{
+		parent::reloadConfig();
+
+		$config = $this->retrieveConfig();
+
+		$this->options = array_merge([
+			'langs' => [],
+			'tables' => [],
+			'default' => 'it',
+			'fallback' => true,
+			'type' => 'url',
+		], $config);
+
+		$this->options = array_merge($this->options, $options);
+
+		$this->langs = $this->options['langs'];
+		if (empty($this->langs))
+			$this->model->error('Cannot load Multilang module, at least one language has to be specified.');
+
+		if ($this->lang === null)
+			$this->lang = $this->options['default'];
+		if ($this->options['fallback'] === true)
+			$this->options['fallback'] = $this->options['default'];
+
+		foreach ($this->options['tables'] as $mlt => $ml) {
+			if (!isset($ml['fields']))
+				$ml = ['fields' => $ml];
+
+			$this->tables[$mlt] = array_merge([
+				'keyfield' => 'parent',
+				'lang' => 'lang',
+				'suffix' => '_texts',
+				'fields' => [],
+			], $ml);
+		}
+
+		if (!in_array($this->options['type'], ['url', 'session']))
+			die('Unknown type for Multilang module');
+
+		return true;
 	}
 
 	/**
@@ -205,14 +220,32 @@ class Multilang extends Module
 	public function normalizeLangsInWords(array $words): array
 	{
 		foreach ($words as $w => $langs) {
-			$default = $langs[$this->options['default']] ?? $langs['en'] ?? '';
+			$default = $langs['en'] ?? $langs[$this->options['default']] ?? '';
 			foreach ($this->langs as $l) {
 				if (!isset($langs[$l]))
 					$words[$w][$l] = $default;
 			}
+			foreach ($langs as $l => $word) {
+				if (!in_array($l, $this->langs))
+					unset($words[$w][$l]);
+			}
 		}
 
 		return $words;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function normalizeAllLangsInWords(): bool
+	{
+		$this->getDictionary();
+
+		foreach ($this->dictionary as $sectionIdx => $section) {
+			$this->dictionary[$sectionIdx]['words'] = $this->normalizeLangsInWords($section['words']);
+		}
+
+		return $this->saveDictionary();
 	}
 
 	/**
