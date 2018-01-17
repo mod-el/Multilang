@@ -262,6 +262,13 @@ class Multilang extends Module
 
 		$this->trigger('changedDictionary');
 
+		if (!isset($this->dictionary['main'])) {
+			$this->dictionary['main'] = [
+				'words' => [],
+				'accessLevel' => 'user',
+			];
+		}
+
 		return (bool)file_put_contents($dictionaryFile, "<?php\n\$this->dictionary = " . var_export($this->dictionary, true) . ";\n");
 	}
 
@@ -339,9 +346,9 @@ class Multilang extends Module
 	public function deleteWord(string $section, string $word): bool
 	{
 		$this->getDictionary();
-		if(!isset($this->dictionary[$section]))
+		if (!isset($this->dictionary[$section]))
 			return false;
-		if(!isset($this->dictionary[$section]['words'][$word]))
+		if (!isset($this->dictionary[$section]['words'][$word]))
 			return false;
 		unset($this->dictionary[$section]['words'][$word]);
 
