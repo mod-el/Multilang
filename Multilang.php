@@ -330,4 +330,21 @@ class Multilang extends Module
 
 		return (bool)($this->dictionary[$section]['accessLevel'] === 'user' or DEBUG_MODE);
 	}
+
+	/**
+	 * @param string $section
+	 * @param string $word
+	 * @return bool
+	 */
+	public function deleteWord(string $section, string $word): bool
+	{
+		$this->getDictionary();
+		if(!isset($this->dictionary[$section]))
+			return false;
+		if(!isset($this->dictionary[$section]['words'][$word]))
+			return false;
+		unset($this->dictionary[$section]['words'][$word]);
+
+		return $this->saveDictionary();
+	}
 }
