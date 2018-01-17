@@ -13,7 +13,7 @@ class Config extends Module_Config
 	 */
 	public function install(array $data = []): bool
 	{
-		return (bool)file_put_contents(INCLUDE_PATH . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'Multilang' . DIRECTORY_SEPARATOR . 'dictionary.php', "<?php\n\$this->>dictionary = [];\n");
+		return (bool)file_put_contents(INCLUDE_PATH . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'Multilang' . DIRECTORY_SEPARATOR . 'dictionary.php', "<?php\n\$this->dictionary = [\'main\'=>[\'words\'=>[],\'accessLevel\'=>\'root\']];\n");
 	}
 
 	/**
@@ -134,19 +134,19 @@ $config = ' . var_export($config, true) . ';
 			if ($this->model->_Multilang->normalizeAllLangsInWords()) {
 				foreach ($this->model->_Multilang->langs as $l) {
 					if (!in_array($l, $originalLanguages)) {
-						foreach($this->model->_Multilang->tables as $t => $opt){
+						foreach ($this->model->_Multilang->tables as $t => $opt) {
 							$fields = [];
 							$fields_prefixed = [];
-							foreach($opt['fields'] as $f){
-								$fields[] = '`'.$f.'`';
-								$fields_prefixed[] = 'l.`'.$f.'`';
+							foreach ($opt['fields'] as $f) {
+								$fields[] = '`' . $f . '`';
+								$fields_prefixed[] = 'l.`' . $f . '`';
 							}
 							$fields = implode(',', $fields);
-							$fields = $fields ? ','.$fields : '';
+							$fields = $fields ? ',' . $fields : '';
 							$fields_prefixed = implode(',', $fields_prefixed);
-							$fields_prefixed = $fields_prefixed ? ','.$fields_prefixed : '';
+							$fields_prefixed = $fields_prefixed ? ',' . $fields_prefixed : '';
 
-							$this->model->_Db->query('INSERT INTO `'.$t.$opt['suffix'].'`(`'.$opt['keyfield'].'`,`'.$opt['lang'].'`'.$fields.') SELECT t.id,\''.$l.'\''.$fields_prefixed.' FROM `'.$t.'` t LEFT JOIN `'.$t.$opt['suffix'].'` l ON (l.`'.$opt['keyfield'].'` = t.id AND l.`'.$opt['lang'].'` = \''.$this->model->_Multilang->options['default'].'\') WHERE t.id NOT IN (SELECT l.`'.$opt['keyfield'].'` FROM `'.$t.$opt['suffix'].'` l WHERE l.`'.$opt['lang'].'` = \''.$l.'\')');
+							$this->model->_Db->query('INSERT INTO `' . $t . $opt['suffix'] . '`(`' . $opt['keyfield'] . '`,`' . $opt['lang'] . '`' . $fields . ') SELECT t.id,\'' . $l . '\'' . $fields_prefixed . ' FROM `' . $t . '` t LEFT JOIN `' . $t . $opt['suffix'] . '` l ON (l.`' . $opt['keyfield'] . '` = t.id AND l.`' . $opt['lang'] . '` = \'' . $this->model->_Multilang->options['default'] . '\') WHERE t.id NOT IN (SELECT l.`' . $opt['keyfield'] . '` FROM `' . $t . $opt['suffix'] . '` l WHERE l.`' . $opt['lang'] . '` = \'' . $l . '\')');
 						}
 					}
 				}
