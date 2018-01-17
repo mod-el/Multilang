@@ -98,6 +98,7 @@
                     <td></td>
                 </tr>
 				<?php
+                ksort($section['words']);
 				foreach ($section['words'] as $word => $langs) {
 					?>
                     <tr>
