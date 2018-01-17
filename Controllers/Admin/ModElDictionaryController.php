@@ -13,36 +13,36 @@ class ModElDictionaryController extends AdminController
 
 	public function post()
 	{
-		if ($this->model->_CSRF->checkCsrf() and isset($_POST['section'], $_POST['word'], $_POST['l'], $_POST['v'])) {
+		if ($this->model->_CSRF->checkCsrf() and isset($_POST['section'])) {
 			try {
 				if (!$this->model->_Multilang->isUserAuthorized($_POST['section']))
-					$this->model->error('Unauthorized');
+					$this->model->error('You are unauthorized to edit this section');
 
-				$this->model->_Multilang->updateWord($_POST['section'], $_POST['word'], $_POST['l'], $_POST['v']);
-				die('ok');
-			} catch (Exception $e) {
-				die($e->getMessage());
-			}
-		} elseif ($this->model->_CSRF->checkCsrf() and isset($_POST['section'], $_POST['word'], $_POST['words'])) {
-			try {
-				if (!$this->model->_Multilang->isUserAuthorized($_POST['section']))
-					$this->model->error('Unauthorized');
+				if (isset($_POST['word'], $_POST['l'], $_POST['v'])) {
+					$this->model->_Multilang->updateWord($_POST['section'], $_POST['word'], $_POST['l'], $_POST['v']);
+					die('ok');
+				} elseif (isset($_POST['word'], $_POST['words'])) {
+					$k = trim($_POST['word']);
+					$words = json_decode($_POST['words'], true);
 
-				$k = trim($_POST['word']);
-				$words = json_decode($_POST['words'], true);
+					if ($k and $words) {
+						$this->model->_Multilang->checkAndInsertWords($_POST['section'], [
+							$k => $words,
+						]);
+					}
 
-				if ($k and $words) {
-					$this->model->_Multilang->checkAndInsertWords($_POST['section'], [
-						$k => $words,
-					]);
+					die('ok');
+				} elseif (isset($_POST['delete'])) {
+					if($this->model->_Multilang->deleteWord($_POST['section'], $_POST['delete']))
+						die('ok');
+					else
+						die('Error');
+				} else {
+					$this->model->error('Unknown action.');
 				}
-
-				die('ok');
 			} catch (Exception $e) {
 				die($e->getMessage());
 			}
-		} else {
-			die('Error.');
 		}
 	}
 }

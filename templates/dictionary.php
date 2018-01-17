@@ -36,6 +36,18 @@
 				section.style.display = 'none';
 		}
 	};
+
+	window.deleteWord = function (section, word) {
+        if(!confirm('<?= entities($this->word('multilang.delete_confirmation')) ?>'))
+        	return false;
+
+		return ajax(adminPrefix + 'model-dictionary', '', 'c_id=' + c_id + '&section=' + encodeURIComponent(section) + '&delete=' + encodeURIComponent(word)).then((r) => {
+			if (r === 'ok')
+				return loadAdminPage(['model-dictionary']);
+			else
+				alert(r);
+		});
+	};
 </script>
 
 <style>
@@ -72,6 +84,7 @@
         <div class="lang-section" id="section-<?= entities($sectionIdx) ?>">
             <table>
                 <tr>
+                    <td></td>
                     <td>
                         <b><?= entities($this->word('multilang.label')) ?></b>
                     </td>
@@ -88,6 +101,10 @@
 				foreach ($section['words'] as $word => $langs) {
 					?>
                     <tr>
+                        <td>[<a href="#"
+                                onclick="deleteWord('<?= urlencode($sectionIdx) ?>', '<?= urlencode($word) ?>'); return false">
+                                x </a>]
+                        </td>
                         <td><b><?= entities($word) ?></b></td>
 						<?php
 						foreach ($this->model->_Multilang->langs as $l) {
@@ -106,6 +123,7 @@
 				}
 				?>
                 <tr id="new-word-<?= entities($sectionIdx) ?>">
+                    <td></td>
                     <td>
                         <input type="text" data-word/>
                     </td>

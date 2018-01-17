@@ -78,6 +78,10 @@ class Config extends Module_Config
 					'it' => 'Inserisci',
 					'en' => 'Insert',
 				],
+				'delete_confirmation' => [
+					'it' => 'Sicuro di voler eliminare?',
+					'en' => 'Are you sure?',
+				],
 			]);
 		}
 		return true;
