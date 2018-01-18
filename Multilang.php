@@ -24,16 +24,6 @@ class Multilang extends Module
 	{
 		$this->reloadConfig($options);
 
-		if ($this->options['type'] == 'session') {
-			if (isset($_GET['mlang']) and in_array($_GET['mlang'], $this->langs))
-				$_SESSION[SESSION_ID]['zk-lang'] = $_GET['mlang'];
-
-			if (isset($_SESSION[SESSION_ID]['zk-lang']))
-				$this->setLang($_SESSION[SESSION_ID]['zk-lang']);
-			else
-				$this->setLang($this->options['default']);
-		}
-
 		$this->model->addPrefixMaker('Multilang');
 
 		if (!isset(Globals::$data['adminAdditionalPages']))
@@ -89,6 +79,22 @@ class Multilang extends Module
 
 		if (!in_array($this->options['type'], ['url', 'session']))
 			die('Unknown type for Multilang module');
+
+		if ($this->options['type'] == 'session') {
+			if (isset($_GET['mlang']) and in_array($_GET['mlang'], $this->langs))
+				$_SESSION[SESSION_ID]['zk-lang'] = $_GET['mlang'];
+
+			if (!isset($_SESSION[SESSION_ID]['zk-lang'])){
+				if(isset($_COOKIE['mlang']))
+					$_SESSION[SESSION_ID]['zk-lang'] = $_COOKIE['mlang'];
+				else
+					$_SESSION[SESSION_ID]['zk-lang'] = $this->options['default'];
+
+				setcookie('mlang', $_SESSION[SESSION_ID]['zk-lang'], time()+60*60*24*90, PATH);
+			}
+
+			$this->setLang($_SESSION[SESSION_ID]['zk-lang']);
+		}
 
 		return true;
 	}
