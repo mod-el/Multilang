@@ -13,7 +13,7 @@ class Config extends Module_Config
 	 */
 	public function install(array $data = []): bool
 	{
-		return (bool)file_put_contents(INCLUDE_PATH . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'Multilang' . DIRECTORY_SEPARATOR . 'dictionary.php', "<?php\n\$this->dictionary = [\'main\'=>[\'words\'=>[],\'accessLevel\'=>\'root\']];\n");
+		return (bool)file_put_contents(INCLUDE_PATH . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'Multilang' . DIRECTORY_SEPARATOR . 'dictionary.php', "<?php\n\$this->dictionary = ['main'=>['words'=>[],'accessLevel'=>'root']];\n");
 	}
 
 	/**
