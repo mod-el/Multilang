@@ -194,8 +194,9 @@ class Multilang extends Module
 	 * @param string $idx
 	 * @param array $words
 	 * @param string $accessLevel
+	 * @return bool
 	 */
-	public function checkAndInsertWords(string $idx, array $words, string $accessLevel = 'root')
+	public function checkAndInsertWords(string $idx, array $words, string $accessLevel = 'root'): bool
 	{
 		$this->getDictionary();
 
@@ -216,7 +217,7 @@ class Multilang extends Module
 				$this->dictionary[$idx]['words'][$w] = array_merge($langs, $this->dictionary[$idx]['words'][$w]);
 		}
 
-		$this->saveDictionary();
+		return $this->saveDictionary();
 	}
 
 	/**
