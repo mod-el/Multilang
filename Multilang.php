@@ -18,7 +18,7 @@ class Multilang extends Module
 
 	/**
 	 * @param array $options
-	 * @throws \Model\Core\Exception
+	 * @throws \Exception
 	 */
 	public function init(array $options)
 	{
@@ -38,7 +38,7 @@ class Multilang extends Module
 	/**
 	 * @param array $options
 	 * @return bool
-	 * @throws \Model\Core\Exception
+	 * @throws \Exception
 	 */
 	public function reloadConfig(array $options = []): bool
 	{
@@ -57,8 +57,6 @@ class Multilang extends Module
 		$this->options = array_merge($this->options, $options);
 
 		$this->langs = $this->options['langs'];
-		if (empty($this->langs))
-			$this->model->error('Cannot load Multilang module, at least one language has to be specified.');
 
 		if ($this->lang === null)
 			$this->lang = $this->options['default'];
