@@ -17,7 +17,7 @@ class Config extends Module_Config
 		});
 
 		$this->addAsset('config', 'config.php', function () {
-			return "<?php\n\$config = ['langs'=>['it','en'],'tables'=>[],'default'=>'it','type'=>'url']];\n";
+			return "<?php\n\$config = ['langs'=>['it','en'],'tables'=>[],'default'=>'it','type'=>'url'];\n";
 		});
 	}
 
