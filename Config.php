@@ -8,12 +8,17 @@ class Config extends Module_Config
 	public $configurable = true;
 
 	/**
-	 * @param array $data
-	 * @return bool
+	 * @throws \Model\Core\Exception
 	 */
-	public function install(array $data = []): bool
+	protected function assetsList()
 	{
-		return (bool)file_put_contents(INCLUDE_PATH . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'Multilang' . DIRECTORY_SEPARATOR . 'dictionary.php', "<?php\n\$this->dictionary = ['main'=>['words'=>[],'accessLevel'=>'root']];\n");
+		$this->addAsset('config', 'dictionary.php', function () {
+			return "<?php\n\$this->dictionary = ['main'=>['words'=>[],'accessLevel'=>'root']];\n";
+		});
+
+		$this->addAsset('config', 'config.php', function () {
+			return "<?php\n\$config = ['langs'=>['it','en'],'tables'=>[],'default'=>'it','type'=>'url']];\n";
+		});
 	}
 
 	/**
@@ -29,6 +34,7 @@ class Config extends Module_Config
 
 	/**
 	 * @return array
+	 * @throws \Exception
 	 */
 	public function getRules(): array
 	{
@@ -93,7 +99,7 @@ class Config extends Module_Config
 	 * @param string $type
 	 * @param array $data
 	 * @return bool
-	 * @throws \Model\Core\Exception
+	 * @throws \Exception
 	 */
 	public function saveConfig(string $type, array $data): bool
 	{
@@ -122,11 +128,7 @@ class Config extends Module_Config
 		if (!isset($config['type']))
 			$config['type'] = 'url';
 
-		$configFileDir = INCLUDE_PATH . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'Multilang';
-		if (!is_dir($configFileDir))
-			mkdir($configFileDir, 0777, true);
-
-		$w = file_put_contents($configFileDir . DIRECTORY_SEPARATOR . 'config.php', '<?php
+		$w = file_put_contents(INCLUDE_PATH . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'Multilang' . DIRECTORY_SEPARATOR . 'config.php', '<?php
 $config = ' . var_export($config, true) . ';
 ');
 		if ($w) {
