@@ -1,17 +1,19 @@
-<?php namespace Model\Multilang\Controllers\Admin;
+<?php namespace Model\Multilang\AdminPages;
 
-use Model\Admin\Controllers\AdminController;
+use Model\Admin\AdminPage;
 use Model\Core\Exception;
 
-class ModElDictionaryController extends AdminController
+class ModElDictionary extends AdminPage
 {
-	public function customize()
+	public function viewOptions()
 	{
-		$this->viewOptions['template-module'] = 'Multilang';
-		$this->viewOptions['template'] = 'dictionary';
+		return [
+			'template-module' => 'Multilang',
+			'template' => 'dictionary',
+		];
 	}
 
-	public function post()
+	public function customize()
 	{
 		if ($this->model->_CSRF->checkCsrf() and isset($_POST['section'])) {
 			try {
@@ -33,7 +35,7 @@ class ModElDictionaryController extends AdminController
 
 					die('ok');
 				} elseif (isset($_POST['delete'])) {
-					if($this->model->_Multilang->deleteWord($_POST['section'], $_POST['delete']))
+					if ($this->model->_Multilang->deleteWord($_POST['section'], $_POST['delete']))
 						die('ok');
 					else
 						die('Error');

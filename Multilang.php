@@ -30,7 +30,7 @@ class Multilang extends Module
 			Globals::$data['adminAdditionalPages'] = [];
 		Globals::$data['adminAdditionalPages'][] = [
 			'name' => 'Dictionary',
-			'controller' => 'ModElDictionary',
+			'page' => 'ModElDictionary',
 			'rule' => 'model-dictionary'
 		];
 	}
