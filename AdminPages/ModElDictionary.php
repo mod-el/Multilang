@@ -5,7 +5,7 @@ use Model\Core\Exception;
 
 class ModElDictionary extends AdminPage
 {
-	public function viewOptions()
+	public function viewOptions(): array
 	{
 		return [
 			'template-module' => 'Multilang',
