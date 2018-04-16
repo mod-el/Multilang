@@ -50,7 +50,7 @@ class Multilang extends Module
 			'langs' => [],
 			'tables' => [],
 			'default' => 'it',
-			'fallback' => true,
+			'fallback' => 'en',
 			'type' => 'url',
 		], $config);
 
@@ -60,8 +60,8 @@ class Multilang extends Module
 
 		if ($this->lang === null)
 			$this->lang = $this->options['default'];
-		if ($this->options['fallback'] === true)
-			$this->options['fallback'] = $this->options['default'];
+		if ($this->options['fallback'] and is_string($this->options['fallback']))
+			$this->options['fallback'] = [$this->options['fallback']];
 
 		foreach ($this->options['tables'] as $mlt => $ml) {
 			if (!isset($ml['fields']))
