@@ -56,10 +56,30 @@ class Multilang extends Module
 
 		$this->options = array_merge($this->options, $options);
 
+		if (!in_array($this->options['type'], ['url', 'session']))
+			$this->model->error('Unknown type for Multilang module');
+
 		$this->langs = $this->options['langs'];
 
-		if ($this->lang === null)
-			$this->lang = $this->options['default'];
+		if ($this->options['type'] == 'session') {
+			if (isset($_GET['mlang']) and in_array($_GET['mlang'], $this->langs))
+				$_SESSION[SESSION_ID]['zk-lang'] = $_GET['mlang'];
+
+			if (!isset($_SESSION[SESSION_ID]['zk-lang'])) {
+				if (isset($_COOKIE['mlang']))
+					$_SESSION[SESSION_ID]['zk-lang'] = $_COOKIE['mlang'];
+				else
+					$_SESSION[SESSION_ID]['zk-lang'] = $this->getDefaultLang();
+
+				setcookie('mlang', $_SESSION[SESSION_ID]['zk-lang'], time() + 60 * 60 * 24 * 90, PATH);
+			}
+
+			$this->setLang($_SESSION[SESSION_ID]['zk-lang']);
+		} else {
+			if ($this->lang === null)
+				$this->setLang($this->getDefaultLang());
+		}
+
 		if ($this->options['fallback'] and is_string($this->options['fallback']))
 			$this->options['fallback'] = [$this->options['fallback']];
 
@@ -75,26 +95,24 @@ class Multilang extends Module
 			], $ml);
 		}
 
-		if (!in_array($this->options['type'], ['url', 'session']))
-			die('Unknown type for Multilang module');
+		return true;
+	}
 
-		if ($this->options['type'] == 'session') {
-			if (isset($_GET['mlang']) and in_array($_GET['mlang'], $this->langs))
-				$_SESSION[SESSION_ID]['zk-lang'] = $_GET['mlang'];
-
-			if (!isset($_SESSION[SESSION_ID]['zk-lang'])) {
-				if (isset($_COOKIE['mlang']))
-					$_SESSION[SESSION_ID]['zk-lang'] = $_COOKIE['mlang'];
-				else
-					$_SESSION[SESSION_ID]['zk-lang'] = $this->options['default'];
-
-				setcookie('mlang', $_SESSION[SESSION_ID]['zk-lang'], time() + 60 * 60 * 24 * 90, PATH);
-			}
-
-			$this->setLang($_SESSION[SESSION_ID]['zk-lang']);
+	/**
+	 * @return string
+	 */
+	private function getDefaultLang(): string
+	{
+		$browserLang = null;
+		if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+			$browserLang = strtolower(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2));
+			$this->trigger('browserLanguage', ['lang' => $browserLang]);
 		}
 
-		return true;
+		if ($browserLang and in_array($browserLang, $this->langs))
+			return $browserLang;
+		else
+			return $this->options['default'];
 	}
 
 	/**
@@ -105,6 +123,7 @@ class Multilang extends Module
 	{
 		if (!in_array($l, $this->langs))
 			return false;
+		$this->trigger('setLang', ['lang' => $l]);
 		$this->lang = $l;
 		return true;
 	}
