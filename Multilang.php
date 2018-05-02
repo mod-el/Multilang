@@ -58,8 +58,16 @@ class Multilang extends Module
 
 		$this->langs = $this->options['langs'];
 
-		if ($this->lang === null)
-			$this->lang = $this->options['default'];
+		if ($this->lang === null) {
+			$browserLang = null;
+			if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
+				$browserLang = strtolower(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2));
+
+			if ($browserLang and in_array($browserLang, $this->langs))
+				$this->lang = $browserLang;
+			else
+				$this->lang = $this->options['default'];
+		}
 		if ($this->options['fallback'] and is_string($this->options['fallback']))
 			$this->options['fallback'] = [$this->options['fallback']];
 
