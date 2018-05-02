@@ -13,7 +13,7 @@ class Config extends Module_Config
 	protected function assetsList()
 	{
 		$this->addAsset('config', 'dictionary.php', function () {
-			return "<?php\n\$this->dictionary = ['main'=>['words'=>[],'accessLevel'=>'root']];\n";
+			return "<?php\n\$this->dictionary = ['main'=>['words'=>[],'accessLevel'=>'user']];\n";
 		});
 
 		$this->addAsset('config', 'config.php', function () {
