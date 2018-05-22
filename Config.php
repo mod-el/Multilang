@@ -51,11 +51,8 @@ class Config extends Module_Config
 			], $config);
 
 			if ($config['type'] == 'url') {
-				foreach ($config['langs'] as $l) {
-					if ($l == $config['default'])
-						continue;
+				foreach ($config['langs'] as $l)
 					$rules[$l] = $l;
-				}
 			}
 		}
 
