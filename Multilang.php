@@ -154,7 +154,7 @@ class Multilang extends Module
 		if (!isset($tags['lang']) or $this->options['type'] != 'url')
 			return '';
 
-		if ($tags['lang'] == $this->options['default'] or !in_array($tags['lang'], $this->langs))
+		if ($tags['lang'] == $this->getDefaultLang() or !in_array($tags['lang'], $this->langs))
 			return '';
 
 		return $tags['lang'];
@@ -168,7 +168,7 @@ class Multilang extends Module
 	 */
 	public function getController(array $request, string $rule)
 	{
-		if ($this->options['type'] == 'url' and in_array($rule, $this->langs) and $this->options['default'] != $rule and $request[0] == $rule) {
+		if ($this->options['type'] == 'url' and in_array($rule, $this->langs) and $this->getDefaultLang() != $rule and $request[0] == $rule) {
 			$this->setLang($rule);
 			array_shift($request);
 			return [
@@ -244,7 +244,7 @@ class Multilang extends Module
 	public function normalizeLangsInWords(array $words): array
 	{
 		foreach ($words as $w => $langs) {
-			$default = $langs['en'] ?? $langs[$this->options['default']] ?? '';
+			$default = $langs['en'] ?? $langs[$this->getDefaultLang()] ?? '';
 			foreach ($this->langs as $l) {
 				if (!isset($langs[$l]))
 					$words[$w][$l] = $default;
