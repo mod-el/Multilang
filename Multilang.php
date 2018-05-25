@@ -220,10 +220,9 @@ class Multilang extends Module
 		if (!isset($this->dictionary[$idx])) {
 			$this->dictionary[$idx] = [
 				'words' => [],
+				'accessLevel' => $accessLevel,
 			];
 		}
-
-		$this->dictionary[$idx]['accessLevel'] = $accessLevel;
 
 		$words = $this->normalizeLangsInWords($words);
 
