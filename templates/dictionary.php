@@ -55,6 +55,12 @@
         color: #333;
     }
 
+    h2 .access-level {
+        color: #999;
+        font-weight: normal;
+        font-size: 12px;
+    }
+
     .lang-section {
         width: 100%;
         padding-left: 25px;
@@ -81,6 +87,7 @@
         <form action="?" method="post" id="new-word-<?= $sectionIdx ?>" onsubmit="newWord('<?= entities($sectionIdx) ?>'); return false"></form>
         <h2>
             <a href="#" onclick="showOrHideLangSection('<?= entities($sectionIdx) ?>'); return false"><?= entities($sectionIdx) ?></a>
+            <span class="access-level">[<?= entities($section['accessLevel']) ?>]</span>
         </h2>
         <div class="lang-section" id="section-<?= entities($sectionIdx) ?>">
             <table>
