@@ -85,6 +85,10 @@ class Config extends Module_Config
 					'it' => 'Sicuro di voler eliminare?',
 					'en' => 'Are you sure?',
 				],
+				'new' => [
+					'it' => 'Nuovo termine',
+					'en' => 'New word',
+				],
 			]);
 		}
 		return true;
