@@ -332,18 +332,40 @@ class Multilang extends Module
 
 		$dictionary = $this->getDictionary();
 
+		$word_arr = null;
+
 		if (count($word) == 1) {
 			foreach ($dictionary as $sectionIdx => $section) {
-				if (isset($section['words'][$word[0]]))
-					return $section['words'][$word[0]][$lang] ?? '';
+				if (isset($section['words'][$word[0]])) {
+					$word_arr = $section['words'][$word[0]];
+					break;
+				}
 			}
-
-			return '';
 		} else {
 			if (!isset($dictionary[$word[0]]))
 				$this->model->error('There is no dictionary section named "' . $word[0] . '"');
 
-			return $dictionary[$word[0]]['words'][$word[1]][$lang] ?? '';
+			if (isset($dictionary[$word[0]]['words'][$word[1]]))
+				$word_arr = $dictionary[$word[0]]['words'][$word[1]];
+		}
+
+		if ($word_arr) {
+			$possibleLangs = [
+				$lang,
+			];
+			foreach ($this->options['fallback'] as $l) {
+				if (!in_array($l, $possibleLangs))
+					$possibleLangs[] = $l;
+			}
+
+			foreach ($possibleLangs as $l) {
+				if ($word_arr[$l] ?? '')
+					return $word_arr[$l];
+			}
+
+			return '';
+		} else {
+			return '';
 		}
 	}
 
