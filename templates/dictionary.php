@@ -9,7 +9,7 @@
 	};
 
 	window.newWord = function (section) {
-		let row = _('#new-word-' + section);
+		let row = _('#new-word-row-' + section);
 		if (!row)
 			return;
 
@@ -38,8 +38,8 @@
 	};
 
 	window.deleteWord = function (section, word) {
-        if(!confirm('<?= entities($this->word('multilang.delete_confirmation')) ?>'))
-        	return false;
+		if (!confirm('<?= entities($this->word('multilang.delete_confirmation')) ?>'))
+			return false;
 
 		return ajax(adminPrefix + 'model-dictionary', '', 'c_id=' + c_id + '&section=' + encodeURIComponent(section) + '&delete=' + encodeURIComponent(word)).then((r) => {
 			if (r === 'ok')
@@ -78,8 +78,9 @@
 		if (!$this->model->_Multilang->isUserAuthorized($sectionIdx))
 			continue;
 		?>
-        <h2><a href="#"
-               onclick="showOrHideLangSection('<?= entities($sectionIdx) ?>'); return false"><?= entities($sectionIdx) ?></a>
+        <form action="?" method="post" id="new-word-<?= $sectionIdx ?>" onsubmit="newWord('<?= entities($sectionIdx) ?>'); return false"></form>
+        <h2>
+            <a href="#" onclick="showOrHideLangSection('<?= entities($sectionIdx) ?>'); return false"><?= entities($sectionIdx) ?></a>
         </h2>
         <div class="lang-section" id="section-<?= entities($sectionIdx) ?>">
             <table>
@@ -97,14 +98,31 @@
 					?>
                     <td></td>
                 </tr>
+                <tr id="new-word-row-<?= entities($sectionIdx) ?>">
+                    <td></td>
+                    <td>
+                        <input type="text" form="new-word-<?= $sectionIdx ?>" placeholder="<?= entities($this->word('multilang.new')) ?>" data-word/>
+                    </td>
+					<?php
+					foreach ($this->model->_Multilang->langs as $l) {
+						?>
+                        <td>
+                            <input type="text" form="new-word-<?= $sectionIdx ?>" data-lang="<?= $l ?>" value=""/>
+                        </td>
+						<?php
+					}
+					?>
+                    <td>
+                        <input type="submit" form="new-word-<?= $sectionIdx ?>" value="<?= entities($this->word('multilang.insert')) ?>"/>
+                    </td>
+                </tr>
 				<?php
-                ksort($section['words']);
+				ksort($section['words']);
 				foreach ($section['words'] as $word => $langs) {
 					?>
                     <tr>
                         <td>[<a href="#"
-                                onclick="deleteWord('<?= urlencode($sectionIdx) ?>', '<?= urlencode($word) ?>'); return false">
-                                x </a>]
+                                onclick="deleteWord('<?= urlencode($sectionIdx) ?>', '<?= urlencode($word) ?>'); return false"> x </a>]
                         </td>
                         <td><b><?= entities($word) ?></b></td>
 						<?php
@@ -123,25 +141,6 @@
 					<?php
 				}
 				?>
-                <tr id="new-word-<?= entities($sectionIdx) ?>">
-                    <td></td>
-                    <td>
-                        <input type="text" data-word/>
-                    </td>
-					<?php
-					foreach ($this->model->_Multilang->langs as $l) {
-						?>
-                        <td>
-                            <input type="text" data-lang="<?= $l ?>" value=""/>
-                        </td>
-						<?php
-					}
-					?>
-                    <td>
-                        <input type="button" value="<?= entities($this->word('multilang.insert')) ?>"
-                               onclick="newWord('<?= entities($sectionIdx) ?>')"/>
-                    </td>
-                </tr>
             </table>
         </div>
 		<?php
