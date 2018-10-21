@@ -3,6 +3,7 @@
 	"description": "Load this module if you want a multilanguage website",
 	"version": "2.2.2",
 	"dependencies": {
-		"Db": ">=1.4.2"
+		"Core": ">=2.7.1",
+		"Db": ">=1.5.0"
 	}
 }
