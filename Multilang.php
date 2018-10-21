@@ -163,10 +163,9 @@ class Multilang extends Module
 	/**
 	 * @param array $request
 	 * @param string $rule
-	 * @return array|bool|string
-	 * @throws \Model\Core\Exception
+	 * @return array|null
 	 */
-	public function getController(array $request, string $rule)
+	public function getController(array $request, string $rule): ?array
 	{
 		if ($this->options['type'] == 'url' and in_array($rule, $this->langs) and $this->getDefaultLang() != $rule and $request[0] == $rule) {
 			$this->setLang($rule);
