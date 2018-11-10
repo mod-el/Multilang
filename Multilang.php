@@ -119,7 +119,7 @@ class Multilang extends Module
 	 * @param string $l
 	 * @return bool
 	 */
-	private function setLang(string $l): bool
+	public function setLang(string $l): bool
 	{
 		if (!in_array($l, $this->langs))
 			return false;

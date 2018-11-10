@@ -89,6 +89,10 @@ class Config extends Module_Config
 					'it' => 'Nuovo termine',
 					'en' => 'New word',
 				],
+				'admin-lang' => [
+					'it' => 'Lingua pannello:',
+					'en' => 'Admin language:',
+				],
 			]);
 		}
 		return true;
