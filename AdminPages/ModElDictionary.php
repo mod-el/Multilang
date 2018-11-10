@@ -47,4 +47,23 @@ class ModElDictionary extends AdminPage
 			}
 		}
 	}
+
+	public function changeAdminLang()
+	{
+		try {
+			if (!$this->model->_CSRF->checkCsrf())
+				$this->model->error('Unauthorized');
+
+			$lang = $this->model->getInput('lang');
+			if (!in_array($lang, $this->model->_Multilang->langs))
+				$this->model->error('Invalid lang');
+
+			setcookie('admin-lang', $lang, time() + 60 * 60 * 24 * 365 * 10, $this->model->_AdminFront->getUrlPrefix());
+
+			echo 'ok';
+		} catch (Exception $e) {
+			echo getErr($e);
+		}
+		die();
+	}
 }
