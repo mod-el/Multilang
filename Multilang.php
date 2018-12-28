@@ -63,18 +63,18 @@ class Multilang extends Module
 
 		if ($this->options['type'] == 'session') {
 			if (isset($_GET['mlang']) and in_array($_GET['mlang'], $this->langs))
-				$_SESSION[SESSION_ID]['zk-lang'] = $_GET['mlang'];
+				$_SESSION['zk-lang'] = $_GET['mlang'];
 
-			if (!isset($_SESSION[SESSION_ID]['zk-lang'])) {
+			if (!isset($_SESSION['zk-lang'])) {
 				if (isset($_COOKIE['mlang']))
-					$_SESSION[SESSION_ID]['zk-lang'] = $_COOKIE['mlang'];
+					$_SESSION['zk-lang'] = $_COOKIE['mlang'];
 				else
-					$_SESSION[SESSION_ID]['zk-lang'] = $this->getDefaultLang();
+					$_SESSION['zk-lang'] = $this->getDefaultLang();
 
-				setcookie('mlang', $_SESSION[SESSION_ID]['zk-lang'], time() + 60 * 60 * 24 * 90, PATH);
+				setcookie('mlang', $_SESSION['zk-lang'], time() + 60 * 60 * 24 * 90, PATH);
 			}
 
-			$this->setLang($_SESSION[SESSION_ID]['zk-lang']);
+			$this->setLang($_SESSION['zk-lang']);
 		} else {
 			if ($this->lang === null)
 				$this->setLang($this->getDefaultLang());
