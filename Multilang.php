@@ -44,22 +44,18 @@ class Multilang extends Module
 	{
 		parent::reloadConfig();
 
-		$config = $this->retrieveConfig();
-
-		$this->options = array_merge([
+		$config = array_merge([
 			'langs' => [],
 			'tables' => [],
 			'default' => 'it',
-			'fallback' => 'en',
+			'fallback' => ['en'],
 			'type' => 'url',
-		], $config);
+		], $this->retrieveConfig());
 
-		$this->options = array_merge($this->options, $options);
-
-		if (!in_array($this->options['type'], ['url', 'session']))
-			$this->model->error('Unknown type for Multilang module');
+		$this->options = array_merge($config, $options);
 
 		$this->langs = $this->options['langs'];
+		$this->tables = $this->options['tables'];
 
 		if ($this->options['type'] == 'session') {
 			if (isset($_GET['mlang']) and in_array($_GET['mlang'], $this->langs))
@@ -80,22 +76,25 @@ class Multilang extends Module
 				$this->setLang($this->getDefaultLang());
 		}
 
-		if ($this->options['fallback'] and is_string($this->options['fallback']))
-			$this->options['fallback'] = [$this->options['fallback']];
-
-		foreach ($this->options['tables'] as $mlt => $ml) {
-			if (!isset($ml['fields']))
-				$ml = ['fields' => $ml];
-
-			$this->tables[$mlt] = array_merge([
-				'keyfield' => 'parent',
-				'lang' => 'lang',
-				'suffix' => '_texts',
-				'fields' => [],
-			], $ml);
-		}
-
 		return true;
+	}
+
+	/**
+	 * Overrides standard behaviour: for this module, config data comes from cache
+	 *
+	 * @return array
+	 */
+	public function retrieveConfig(): array
+	{
+		if (file_exists(INCLUDE_PATH . 'model' . DIRECTORY_SEPARATOR . 'Multilang' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'config.php')) {
+			require(INCLUDE_PATH . 'model' . DIRECTORY_SEPARATOR . 'Multilang' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'config.php');
+			if (!isset($config) or !is_array($config))
+				return [];
+
+			return $config;
+		} else {
+			return [];
+		}
 	}
 
 	/**
