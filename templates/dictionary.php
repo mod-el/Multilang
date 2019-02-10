@@ -32,7 +32,7 @@
 			'words': JSON.stringify(words)
 		}).then(r => {
 			if (r === 'ok')
-				return loadAdminPage(['model-dictionary']);
+				return loadAdminPage('model-dictionary');
 			else
 				alert(r);
 		});
@@ -58,7 +58,7 @@
 			'delete': word
 		}).then(r => {
 			if (r === 'ok')
-				return loadAdminPage(['model-dictionary']);
+				return loadAdminPage('model-dictionary');
 			else
 				alert(r);
 		});
