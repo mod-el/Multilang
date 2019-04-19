@@ -397,4 +397,23 @@ class Multilang extends Module
 
 		return $this->saveDictionary();
 	}
+
+	/**
+	 * @param string $table
+	 * @return bool
+	 */
+	public function checkAndInsertTable(string $table): bool
+	{
+		if (array_key_exists($table, $this->tables))
+			return true;
+
+		$config = parent::retrieveConfig();
+		if (array_key_exists($table, $config['tables']) or in_array($table, $config['tables']))
+			return true;
+		$config['tables'][] = $table;
+
+		$configClass = new Config($this->model);
+		$configClass->saveConfig('config', $config);
+		return $configClass->makeCache();
+	}
 }

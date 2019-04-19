@@ -172,8 +172,10 @@ $config = ' . var_export($config, true) . ';
 
 		$originalLanguages = $config['langs'];
 
-		$langs = explode(',', $data['langs']);
-		foreach ($langs as &$l) {
+		if (!is_array($data['langs']))
+			$data['langs'] = explode(',', $data['langs']);
+
+		foreach ($data['langs'] as &$l) {
 			if (strlen($l) !== 2)
 				$this->model->error($l . ' is not a valid language');
 
@@ -181,12 +183,10 @@ $config = ' . var_export($config, true) . ';
 		}
 		unset($l);
 
-		$defaultLang = $data['default'];
-		if (!in_array($defaultLang, $langs))
-			$this->model->error($defaultLang . ' is not among chosen languages');
+		if (!in_array($data['default'], $data['langs']))
+			$this->model->error($data['default'] . ' is not among chosen languages');
 
-		$config['langs'] = $langs;
-		$config['default'] = $defaultLang;
+		$config = array_merge($config, $data);
 
 		if (!isset($config['tables']))
 			$config['tables'] = [];
