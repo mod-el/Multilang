@@ -130,11 +130,14 @@ class Config extends Module_Config
 			], $tableData);
 
 			if (count($tableData['fields']) === 0) {
-				$tableModel = $this->model->_Db->getTable($table . $tableData['suffix']);
-				foreach ($tableModel->columns as $columnName => $column) {
-					if ($columnName === $tableModel->primary or $columnName === $tableData['keyfield'] or $columnName === $tableData['lang'])
-						continue;
-					$tableData['fields'][] = $columnName;
+				try {
+					$tableModel = $this->model->_Db->getTable($table . $tableData['suffix']);
+					foreach ($tableModel->columns as $columnName => $column) {
+						if ($columnName === $tableModel->primary or $columnName === $tableData['keyfield'] or $columnName === $tableData['lang'])
+							continue;
+						$tableData['fields'][] = $columnName;
+					}
+				} catch (\Exception $e) {
 				}
 			}
 
