@@ -5,16 +5,11 @@ use Model\Core\Exception;
 
 class ModElDictionary extends AdminPage
 {
-	public function viewOptions(): array
-	{
-		return [
-			'template-module' => 'Multilang',
-			'template' => 'dictionary',
-		];
-	}
-
 	public function customize()
 	{
+		$this->model->viewOptions['template-module'] = 'Multilang';
+		$this->model->viewOptions['template'] = 'Multilang';
+
 		if ($this->model->_CSRF->checkCsrf() and isset($_POST['section'])) {
 			try {
 				if (!$this->model->_Multilang->isUserAuthorized($_POST['section']))
