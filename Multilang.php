@@ -73,7 +73,7 @@ class Multilang extends Module
 			$this->setLang($_SESSION['zk-lang']);
 		} else {
 			if ($this->lang === null)
-				$this->setLang($this->getDefaultLang());
+				$this->setLang($this->options['default']);
 		}
 
 		return true;
@@ -166,7 +166,7 @@ class Multilang extends Module
 	 */
 	public function getController(array $request, string $rule): ?array
 	{
-		if ($this->options['type'] == 'url' and in_array($rule, $this->langs) and $this->getDefaultLang() != $rule and $request[0] == $rule) {
+		if ($this->options['type'] == 'url' and in_array($rule, $this->langs) and $this->options['default'] != $rule and $request[0] == $rule) {
 			$this->setLang($rule);
 			array_shift($request);
 			return [
