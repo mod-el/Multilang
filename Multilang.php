@@ -26,13 +26,15 @@ class Multilang extends Module
 
 		$this->model->addPrefixMaker('Multilang');
 
-		if (!isset(Globals::$data['adminAdditionalPages']))
-			Globals::$data['adminAdditionalPages'] = [];
-		Globals::$data['adminAdditionalPages'][] = [
-			'name' => 'Dictionary',
-			'page' => 'ModElDictionary',
-			'rule' => 'model-dictionary',
-		];
+		if (!($this->options['hide-dictionary'] ?? false) or DEBUG_MODE) {
+			if (!isset(Globals::$data['adminAdditionalPages']))
+				Globals::$data['adminAdditionalPages'] = [];
+			Globals::$data['adminAdditionalPages'][] = [
+				'name' => 'Dictionary',
+				'page' => 'ModElDictionary',
+				'rule' => 'model-dictionary',
+			];
+		}
 	}
 
 	/**
