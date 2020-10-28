@@ -8,7 +8,7 @@ class ModElDictionary extends AdminPage
 	public function customize()
 	{
 		$this->model->viewOptions['template-module'] = 'Multilang';
-		$this->model->viewOptions['template'] = 'Multilang';
+		$this->model->viewOptions['template'] = 'dictionary';
 
 		if ($this->model->_CSRF->checkCsrf() and isset($_POST['section'])) {
 			try {
