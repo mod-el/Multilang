@@ -9,56 +9,56 @@ class ModElDictionary extends AdminPage
 	{
 		$this->model->viewOptions['template-module'] = 'Multilang';
 		$this->model->viewOptions['template'] = 'dictionary';
-
-		if ($this->model->_CSRF->checkCsrf() and isset($_POST['section'])) {
-			try {
-				if (!$this->model->_Multilang->isUserAuthorized($_POST['section']))
-					$this->model->error('You are unauthorized to edit this section');
-
-				if (isset($_POST['word'], $_POST['l'], $_POST['v'])) {
-					$this->model->_Multilang->updateWord($_POST['section'], $_POST['word'], $_POST['l'], $_POST['v']);
-					die('ok');
-				} elseif (isset($_POST['word'], $_POST['words'])) {
-					$k = trim($_POST['word']);
-					$words = json_decode($_POST['words'], true);
-
-					if ($k and $words) {
-						$this->model->_Multilang->checkAndInsertWords($_POST['section'], [
-							$k => $words,
-						]);
-					}
-
-					die('ok');
-				} elseif (isset($_POST['delete'])) {
-					if ($this->model->_Multilang->deleteWord($_POST['section'], $_POST['delete']))
-						die('ok');
-					else
-						die('Error');
-				} else {
-					$this->model->error('Unknown action.');
-				}
-			} catch (Exception $e) {
-				die($e->getMessage());
-			}
-		}
 	}
 
-	public function changeAdminLang()
+	public function editWord(array $payload)
 	{
-		try {
-			if (!$this->model->_CSRF->checkCsrf())
-				$this->model->error('Unauthorized');
+		if (empty($payload['section']) or empty($payload['word']) or empty($payload['l']) or empty($payload['v']))
+			$this->model->error('Bad data', ['code' => 400]);
 
-			$lang = $this->model->getInput('lang');
-			if (!in_array($lang, $this->model->_Multilang->langs))
-				$this->model->error('Invalid lang');
+		if (!$this->model->_Multilang->isUserAuthorized($payload['section']))
+			$this->model->error('You are unauthorized to edit this section', ['code' => 401]);
 
-			setcookie('admin-lang', $lang, time() + 60 * 60 * 24 * 365 * 10, $this->model->_AdminFront->getUrlPrefix());
+		$this->model->_Multilang->updateWord($payload['section'], $payload['word'], $payload['l'], $payload['v']);
 
-			echo 'ok';
-		} catch (Exception $e) {
-			echo getErr($e);
+		return ['success' => true];
+	}
+
+	public function newWord(array $payload)
+	{
+		if (empty($payload['section']) or empty($payload['word']) or empty($payload['words']) or !is_array($payload['words']))
+			$this->model->error('Bad data', ['code' => 400]);
+
+		$k = trim($payload['word']);
+
+		if ($k and $payload['words']) {
+			if (!$this->model->_Multilang->checkAndInsertWords($payload['section'], [
+				$k => $payload['words'],
+			]))
+				$this->model->error('Error while saving', ['code' => 500]);
 		}
-		die();
+
+		return ['success' => true];
+	}
+
+	public function deleteWord(array $payload)
+	{
+		if (empty($payload['section']) or empty($payload['word']))
+			$this->model->error('Bad data', ['code' => 400]);
+
+		if (!$this->model->_Multilang->deleteWord($payload['section'], $payload['word']))
+			$this->model->error('Error while deleting', ['code' => 500]);
+
+		return ['success' => true];
+	}
+
+	public function changeAdminLang(array $payload)
+	{
+		if(empty($payload['lang']) or !in_array($payload['lang'], $this->model->_Multilang->langs))
+			$this->model->error('Invalid lang');
+
+		setcookie('admin-lang', $payload['lang'], time() + 60 * 60 * 24 * 365 * 10, $this->model->_AdminFront->getUrlPrefix());
+
+		return ['success' => true];
 	}
 }

@@ -1,40 +1,46 @@
 <script type="text/javascript">
-	window.editWord = function (field, section, word, l) {
+	window.editWord = async function (field, section, word, l) {
 		field.style.background = '#DDD';
-		ajax('<?=$this->getUrl()?>', {}, {
-			'c_id': c_id,
-			'section': section,
-			'word': word,
-			'l': l,
-			'v': field.getValue(true)
-		}).then(r => {
+		return adminApiRequest('page/model-dictionary/edit-word', {
+			section,
+			word,
+			l,
+			v: await field.getValue()
+		}).then(response => {
+			if (!response.success)
+				throw 'Errore risposta';
+		}).catch(err => {
+			alert(err);
+		}).finally(() => {
 			field.style.background = '#FFF';
-			if (r !== 'ok')
-				alert(r);
 		});
 	};
 
-	window.newWord = function (section) {
+	window.newWord = async function (section) {
 		let row = _('#new-word-row-' + section);
 		if (!row)
 			return;
 
-		var words = {};
+		document.body.style.cursor = 'loading';
+
+		let words = {};
 		row.querySelectorAll('input').forEach(el => {
 			if (el.getAttribute('data-lang'))
 				words[el.getAttribute('data-lang')] = el.getValue(true);
 		});
 
-		return ajax(adminPrefix + 'model-dictionary', {}, {
-			'c_id': c_id,
-			'section': section,
-			'word': row.querySelector('[data-word]').getValue(true),
-			'words': JSON.stringify(words)
-		}).then(r => {
-			if (r === 'ok')
-				return loadAdminPage('model-dictionary');
-			else
-				alert(r);
+		return adminApiRequest('page/model-dictionary/new-word', {
+			section,
+			word: row.querySelector('[data-word]').getValue(true),
+			words
+		}).then(response => {
+			if (!response.success)
+				throw 'Errore risposta';
+
+			return loadAdminPage('model-dictionary');
+		}).catch(err => {
+			alert(err);
+			document.body.style.cursor = 'auto';
 		});
 	};
 
@@ -48,30 +54,34 @@
 		}
 	};
 
-	window.deleteWord = function (section, word) {
+	window.deleteWord = async function (section, word) {
 		if (!confirm('<?= entities($this->word('multilang.delete_confirmation')) ?>'))
-			return false;
+			return;
 
-		return ajax(adminPrefix + 'model-dictionary', {}, {
-			'c_id': c_id,
-			'section': section,
-			'delete': word
-		}).then(r => {
-			if (r === 'ok')
-				return loadAdminPage('model-dictionary');
-			else
-				alert(r);
+		document.body.style.cursor = 'loading';
+
+		return adminApiRequest('page/model-dictionary/delete-word', {
+			section,
+			word
+		}).then(response => {
+			if (!response.success)
+				throw 'Errore risposta';
+
+			return loadAdminPage('model-dictionary');
+		}).catch(err => {
+			alert(err);
+			document.body.style.cursor = 'auto';
 		});
 	};
 
-	window.changeAdminLang = function (lang) {
-		return ajax(adminPrefix + 'model-dictionary/changeAdminLang', {'ajax': ''}, {
-			'c_id': c_id,
-			'lang': lang
-		}).then(r => {
-			if (r !== 'ok')
-				alert(r);
+	window.changeAdminLang = async function (lang) {
+		return adminApiRequest('page/model-dictionary/change-admin-lang', {lang}).then(response => {
+			if (!response.success)
+				throw 'Errore risposta';
+
 			document.location.reload();
+		}).catch(err => {
+			alert(err);
 		});
 	};
 </script>
@@ -169,7 +179,7 @@
 					?>
 					<tr>
 						<td>[<a href="#"
-								onclick="deleteWord('<?= urlencode($sectionIdx) ?>', '<?= urlencode($word) ?>'); return false"> x </a>]
+						        onclick="deleteWord('<?= urlencode($sectionIdx) ?>', '<?= urlencode($word) ?>'); return false"> x </a>]
 						</td>
 						<td><b><?= entities($word) ?></b></td>
 						<?php
@@ -177,8 +187,8 @@
 							?>
 							<td>
 								<input type="text" name="<?= entities($word) ?>-<?= entities($l) ?>"
-									   value="<?= entities($langs[$l] ?? '') ?>"
-									   onchange="editWord(this, '<?= entities($sectionIdx) ?>', '<?= entities($word) ?>', '<?= entities($l) ?>')"/>
+								       value="<?= entities($langs[$l] ?? '') ?>"
+								       onchange="editWord(this, '<?= entities($sectionIdx) ?>', '<?= entities($word) ?>', '<?= entities($l) ?>')"/>
 							</td>
 							<?php
 						}
