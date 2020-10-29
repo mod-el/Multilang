@@ -10,7 +10,7 @@
 			if (!response.success)
 				throw 'Errore risposta';
 		}).catch(err => {
-			alert(err);
+			reportAdminError(err);
 		}).finally(() => {
 			field.style.background = '#FFF';
 		});
@@ -39,7 +39,7 @@
 
 			return loadAdminPage('model-dictionary');
 		}).catch(err => {
-			alert(err);
+			reportAdminError(err);
 			document.body.style.cursor = 'auto';
 		});
 	};
@@ -69,7 +69,7 @@
 
 			return loadAdminPage('model-dictionary');
 		}).catch(err => {
-			alert(err);
+			reportAdminError(err);
 			document.body.style.cursor = 'auto';
 		});
 	};
@@ -81,7 +81,7 @@
 
 			document.location.reload();
 		}).catch(err => {
-			alert(err);
+			reportAdminError(err);
 		});
 	};
 </script>
