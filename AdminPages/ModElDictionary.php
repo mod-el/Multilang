@@ -13,13 +13,13 @@ class ModElDictionary extends AdminPage
 
 	public function editWord(array $payload)
 	{
-		if (empty($payload['section']) or empty($payload['word']) or empty($payload['l']) or empty($payload['v']))
+		if (empty($payload['section']) or empty($payload['word']) or empty($payload['l']))
 			$this->model->error('Bad data', ['code' => 400]);
 
 		if (!$this->model->_Multilang->isUserAuthorized($payload['section']))
 			$this->model->error('You are unauthorized to edit this section', ['code' => 401]);
 
-		$this->model->_Multilang->updateWord($payload['section'], $payload['word'], $payload['l'], $payload['v']);
+		$this->model->_Multilang->updateWord($payload['section'], $payload['word'], $payload['l'], $payload['v'] ?? '');
 
 		return ['success' => true];
 	}
