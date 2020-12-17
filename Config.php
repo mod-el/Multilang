@@ -67,34 +67,32 @@ class Config extends Module_Config
 	 */
 	public function makeCache(): bool
 	{
-		if ($this->model->isLoaded('Multilang')) {
-			$this->model->_Multilang->checkAndInsertWords('multilang', [
-				'dictionary' => [
-					'it' => 'Dizionario',
-					'en' => 'Dictionary',
-				],
-				'label' => [
-					'it' => 'Label',
-					'en' => 'Label',
-				],
-				'insert' => [
-					'it' => 'Inserisci',
-					'en' => 'Insert',
-				],
-				'delete_confirmation' => [
-					'it' => 'Sicuro di voler eliminare?',
-					'en' => 'Are you sure?',
-				],
-				'new' => [
-					'it' => 'Nuovo termine',
-					'en' => 'New word',
-				],
-				'admin-lang' => [
-					'it' => 'Lingua pannello:',
-					'en' => 'Admin language:',
-				],
-			]);
-		}
+		$this->model->_Multilang->checkAndInsertWords('multilang', [
+			'dictionary' => [
+				'it' => 'Dizionario',
+				'en' => 'Dictionary',
+			],
+			'label' => [
+				'it' => 'Label',
+				'en' => 'Label',
+			],
+			'insert' => [
+				'it' => 'Inserisci',
+				'en' => 'Insert',
+			],
+			'delete_confirmation' => [
+				'it' => 'Sicuro di voler eliminare?',
+				'en' => 'Are you sure?',
+			],
+			'new' => [
+				'it' => 'Nuovo termine',
+				'en' => 'New word',
+			],
+			'admin-lang' => [
+				'it' => 'Lingua pannello:',
+				'en' => 'Admin language:',
+			],
+		]);
 
 		$config = array_merge([
 			'langs' => [],
