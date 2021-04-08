@@ -9,6 +9,7 @@ class ModElDictionary extends AdminPage
 	{
 		$this->model->viewOptions['template-module'] = 'Multilang';
 		$this->model->viewOptions['template'] = 'dictionary';
+		$this->model->viewOptions['cache'] = false;
 	}
 
 	public function editWord(array $payload)
