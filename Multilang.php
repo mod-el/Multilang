@@ -317,9 +317,8 @@ class Multilang extends Module
 	 * @param string $word
 	 * @param string|null $lang
 	 * @return string
-	 * @throws \Model\Core\Exception
 	 */
-	public function word(string $word, string $lang = null): string
+	public function word(string $word, ?string $lang = null): string
 	{
 		if (!$lang)
 			$lang = $this->lang;

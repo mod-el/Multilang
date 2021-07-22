@@ -55,7 +55,7 @@
 	};
 
 	window.deleteWord = async function (section, word) {
-		if (!confirm('<?= entities($this->word('multilang.delete_confirmation')) ?>'))
+		if (!confirm('<?= $this->word('multilang.delete_confirmation') ?>'))
 			return;
 
 		document.body.style.cursor = 'loading';
@@ -113,7 +113,7 @@
 
 <div style="padding: 0 20px">
 	<div class="float-right">
-		<?= entities($this->word('multilang.admin-lang')) ?>
+		<?= $this->word('multilang.admin-lang') ?>
 		<select onchange="this.getValue().then(l => changeAdminLang(l))">
 			<option value=""></option>
 			<?php
@@ -125,7 +125,7 @@
 			?>
 		</select>
 	</div>
-	<h1><?= entities($this->word('multilang.dictionary')) ?></h1>
+	<h1><?= $this->word('multilang.dictionary') ?></h1>
 
 	<?php
 	$dictionary = $this->model->_Multilang->getDictionary();
@@ -144,7 +144,7 @@
 				<tr>
 					<td></td>
 					<td>
-						<b><?= entities($this->word('multilang.label')) ?></b>
+						<b><?= $this->word('multilang.label') ?></b>
 					</td>
 					<?php
 					foreach ($this->model->_Multilang->langs as $l) {
@@ -158,7 +158,7 @@
 				<tr id="new-word-row-<?= entities($sectionIdx) ?>">
 					<td></td>
 					<td>
-						<input type="text" form="new-word-<?= $sectionIdx ?>" placeholder="<?= entities($this->word('multilang.new')) ?>" data-word/>
+						<input type="text" form="new-word-<?= $sectionIdx ?>" placeholder="<?= $this->word('multilang.new') ?>" data-word/>
 					</td>
 					<?php
 					foreach ($this->model->_Multilang->langs as $l) {
@@ -170,7 +170,7 @@
 					}
 					?>
 					<td>
-						<input type="submit" form="new-word-<?= $sectionIdx ?>" value="<?= entities($this->word('multilang.insert')) ?>"/>
+						<input type="submit" form="new-word-<?= $sectionIdx ?>" value="<?= $this->word('multilang.insert') ?>"/>
 					</td>
 				</tr>
 				<?php
