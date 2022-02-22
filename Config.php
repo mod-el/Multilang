@@ -158,6 +158,10 @@ $config = ' . var_export($config, true) . ';
 		return ['Db'];
 	}
 
+	public function getConfigData(): ?array
+	{
+		return [];
+	}
 
 	/**
 	 * Save the configuration
