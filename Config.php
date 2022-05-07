@@ -41,7 +41,7 @@ class Config extends Module_Config
 		$config = $this->retrieveConfig();
 		$rules = [];
 
-		if ($config and is_array($config)) {
+		if ($config) {
 			$config = array_merge([
 				'langs' => [],
 				'tables' => [],
@@ -131,7 +131,7 @@ class Config extends Module_Config
 				try {
 					$tableModel = $this->model->_Db->getTable($table . $tableData['suffix']);
 					foreach ($tableModel->columns as $columnName => $column) {
-						if ($columnName === $tableModel->primary or $columnName === $tableData['keyfield'] or $columnName === $tableData['lang'])
+						if (in_array($columnName, $tableModel->primary) or $columnName === $tableData['keyfield'] or $columnName === $tableData['lang'])
 							continue;
 						$tableData['fields'][] = $columnName;
 					}
