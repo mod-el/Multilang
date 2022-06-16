@@ -5,16 +5,11 @@ use Model\Core\Globals;
 
 class Multilang extends Module
 {
-	/** @var string */
-	public $lang = null;
-	/** @var string[] */
-	public $langs;
-	/** @var array[] */
-	public $tables = [];
-	/** @var array */
-	public $options = [];
-	/** @var array */
-	private $dictionary;
+	public string $lang;
+	public array $langs;
+	public array $tables = [];
+	public array $options = [];
+	private array $dictionary;
 
 	/**
 	 * @param array $options
@@ -29,6 +24,7 @@ class Multilang extends Module
 		if (!($this->options['hide-dictionary'] ?? false) or DEBUG_MODE) {
 			if (!isset(Globals::$data['adminAdditionalPages']))
 				Globals::$data['adminAdditionalPages'] = [];
+
 			Globals::$data['adminAdditionalPages'][] = [
 				'name' => 'Dictionary',
 				'page' => 'ModElDictionary',
@@ -74,8 +70,8 @@ class Multilang extends Module
 
 			$this->setLang($_SESSION['zk-lang']);
 		} else {
-			if ($this->lang === null)
-				$this->setLang($this->options['default']);
+			if (!isset($this->lang))
+				$this->setLang($this->getDefaultLang());
 		}
 
 		return true;
@@ -134,7 +130,7 @@ class Multilang extends Module
 	 */
 	public function getDictionary(): array
 	{
-		if ($this->dictionary === null) {
+		if (!isset($this->dictionary)) {
 			$this->dictionary = [];
 
 			$dictionaryFile = INCLUDE_PATH . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'Multilang' . DIRECTORY_SEPARATOR . 'dictionary.php';
@@ -155,7 +151,7 @@ class Multilang extends Module
 		if (!isset($tags['lang']) or $this->options['type'] != 'url')
 			return '';
 
-		if ($tags['lang'] == $this->getDefaultLang() or !in_array($tags['lang'], $this->langs))
+		if ($tags['lang'] === $this->getDefaultLang() or !in_array($tags['lang'], $this->langs))
 			return '';
 
 		return $tags['lang'];
@@ -168,9 +164,10 @@ class Multilang extends Module
 	 */
 	public function getController(array $request, string $rule): ?array
 	{
-		if ($this->options['type'] == 'url' and in_array($rule, $this->langs) and $this->options['default'] != $rule and $request[0] == $rule) {
+		if ($this->options['type'] === 'url' and in_array($rule, $this->langs) and $request[0] === $rule) {
 			$this->setLang($rule);
 			array_shift($request);
+
 			return [
 				'controller' => false,
 				'prefix' => $rule,
@@ -187,11 +184,10 @@ class Multilang extends Module
 	 */
 	public function getTableFor(string $table)
 	{
-		if (array_key_exists($table, $this->tables)) {
+		if (array_key_exists($table, $this->tables))
 			return $table . $this->tables[$table]['suffix'];
-		} else {
+		else
 			return null;
-		}
 	}
 
 	/**
@@ -200,11 +196,10 @@ class Multilang extends Module
 	 */
 	public function getTableOptionsFor(string $table)
 	{
-		if (array_key_exists($table, $this->tables)) {
+		if (array_key_exists($table, $this->tables))
 			return $this->tables[$table];
-		} else {
+		else
 			return null;
-		}
 	}
 
 	/**
@@ -264,9 +259,8 @@ class Multilang extends Module
 	{
 		$this->getDictionary();
 
-		foreach ($this->dictionary as $sectionIdx => $section) {
+		foreach ($this->dictionary as $sectionIdx => $section)
 			$this->dictionary[$sectionIdx]['words'] = $this->normalizeLangsInWords($section['words']);
-		}
 
 		return $this->saveDictionary();
 	}
@@ -276,7 +270,7 @@ class Multilang extends Module
 	 */
 	public function saveDictionary(): bool
 	{
-		if (!$this->dictionary === null)
+		if (!isset($this->dictionary))
 			return false;
 
 		$dictionaryFile = INCLUDE_PATH . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'Multilang' . DIRECTORY_SEPARATOR . 'dictionary.php';
