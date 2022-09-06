@@ -1,9 +1,12 @@
 {
 	"name": "Multilang",
 	"description": "Load this module if you want a multilanguage website",
-	"version": "2.3.1",
+	"version": "3.0.0",
 	"dependencies": {
-		"Core": ">=2.8.3",
-		"Db": ">=1.5.1"
-	}
+		"Core": ">=3.0.0",
+		"Db": ">=4.0.0"
+	},
+	"requires": [
+		"model/multilang"
+	]
 }

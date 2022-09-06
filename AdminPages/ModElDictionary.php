@@ -1,7 +1,7 @@
 <?php namespace Model\Multilang\AdminPages;
 
 use Model\Admin\AdminPage;
-use Model\Core\Exception;
+use Model\Multilang\Dictionary;
 
 class ModElDictionary extends AdminPage
 {
@@ -17,10 +17,10 @@ class ModElDictionary extends AdminPage
 		if (empty($payload['section']) or empty($payload['word']) or empty($payload['l']))
 			$this->model->error('Bad data', ['code' => 400]);
 
-		if (!$this->model->_Multilang->isUserAuthorized($payload['section']))
+		if (!Dictionary::isUserAuthorized($payload['section']))
 			$this->model->error('You are unauthorized to edit this section', ['code' => 401]);
 
-		$this->model->_Multilang->updateWord($payload['section'], $payload['word'], $payload['l'], $payload['v'] ?? '');
+		Dictionary::set($payload['section'], $payload['word'], [$payload['l'] => $payload['v']]);
 
 		return ['success' => true];
 	}
@@ -32,12 +32,8 @@ class ModElDictionary extends AdminPage
 
 		$k = trim($payload['word']);
 
-		if ($k and $payload['words']) {
-			if (!$this->model->_Multilang->checkAndInsertWords($payload['section'], [
-				$k => $payload['words'],
-			]))
-				$this->model->error('Error while saving', ['code' => 500]);
-		}
+		if ($k and $payload['words'])
+			Dictionary::set($payload['section'], $k, $payload['words']);
 
 		return ['success' => true];
 	}
@@ -47,15 +43,17 @@ class ModElDictionary extends AdminPage
 		if (empty($payload['section']) or empty($payload['word']))
 			$this->model->error('Bad data', ['code' => 400]);
 
-		if (!$this->model->_Multilang->deleteWord($payload['section'], $payload['word']))
-			$this->model->error('Error while deleting', ['code' => 500]);
+		if (!Dictionary::isUserAuthorized($payload['section']))
+			$this->model->error('You are unauthorized to edit this section', ['code' => 401]);
+
+		Dictionary::delete($payload['section'], $payload['word']);
 
 		return ['success' => true];
 	}
 
 	public function changeAdminLang(array $payload)
 	{
-		if(empty($payload['lang']) or !in_array($payload['lang'], $this->model->_Multilang->langs))
+		if (empty($payload['lang']) or !in_array($payload['lang'], $this->model->_Multilang->langs))
 			$this->model->error('Invalid lang');
 
 		setcookie('admin-lang', $payload['lang'], time() + 60 * 60 * 24 * 365 * 10, $this->model->_AdminFront->getUrlPrefix());

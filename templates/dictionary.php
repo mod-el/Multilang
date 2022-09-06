@@ -128,10 +128,10 @@
 	<h1><?= $this->word('multilang.dictionary') ?></h1>
 
 	<?php
-	$dictionary = $this->model->_Multilang->getDictionary();
+	$dictionary = \Model\Multilang\Dictionary::getFull();
 
 	foreach ($dictionary as $sectionIdx => $section) {
-		if (!$this->model->_Multilang->isUserAuthorized($sectionIdx))
+		if (!\Model\Multilang\Dictionary::isUserAuthorized($sectionIdx))
 			continue;
 		?>
 		<form action="?" method="post" id="new-word-<?= $sectionIdx ?>" onsubmit="newWord('<?= entities($sectionIdx) ?>'); return false"></form>

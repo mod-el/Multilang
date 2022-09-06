@@ -9,7 +9,6 @@ class Multilang extends Module
 	public array $langs;
 	public array $tables = [];
 	public array $options = [];
-	private array $dictionary;
 
 	/**
 	 * @param array $options
@@ -122,23 +121,8 @@ class Multilang extends Module
 			return false;
 		$this->trigger('setLang', ['lang' => $l]);
 		$this->lang = $l;
+		Ml::setLang($l);
 		return true;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getDictionary(): array
-	{
-		if (!isset($this->dictionary)) {
-			$this->dictionary = [];
-
-			$dictionaryFile = INCLUDE_PATH . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'Multilang' . DIRECTORY_SEPARATOR . 'dictionary.php';
-			if (file_exists($dictionaryFile))
-				require($dictionaryFile);
-		}
-
-		return $this->dictionary;
 	}
 
 	/**
@@ -203,194 +187,13 @@ class Multilang extends Module
 	}
 
 	/**
-	 * @param string $idx
-	 * @param array $words
-	 * @param string $accessLevel
-	 * @return bool
-	 */
-	public function checkAndInsertWords(string $idx, array $words, string $accessLevel = 'root'): bool
-	{
-		$this->getDictionary();
-
-		if (!isset($this->dictionary[$idx])) {
-			$this->dictionary[$idx] = [
-				'words' => [],
-				'accessLevel' => $accessLevel,
-			];
-		}
-
-		$words = $this->normalizeLangsInWords($words);
-
-		foreach ($words as $w => $langs) {
-			if (!isset($this->dictionary[$idx]['words'][$w]))
-				$this->dictionary[$idx]['words'][$w] = $langs;
-			else
-				$this->dictionary[$idx]['words'][$w] = array_merge($langs, $this->dictionary[$idx]['words'][$w]);
-		}
-
-		return $this->saveDictionary();
-	}
-
-	/**
-	 * @param array $words
-	 * @return array
-	 */
-	public function normalizeLangsInWords(array $words): array
-	{
-		foreach ($words as $w => $langs) {
-			$default = $langs['en'] ?? $langs[$this->getDefaultLang()] ?? '';
-			foreach ($this->langs as $l) {
-				if (!isset($langs[$l]))
-					$words[$w][$l] = $default;
-			}
-			foreach ($langs as $l => $word) {
-				if (!in_array($l, $this->langs))
-					unset($words[$w][$l]);
-			}
-		}
-
-		return $words;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function normalizeAllLangsInWords(): bool
-	{
-		$this->getDictionary();
-
-		foreach ($this->dictionary as $sectionIdx => $section)
-			$this->dictionary[$sectionIdx]['words'] = $this->normalizeLangsInWords($section['words']);
-
-		return $this->saveDictionary();
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function saveDictionary(): bool
-	{
-		if (!isset($this->dictionary))
-			return false;
-
-		$dictionaryFile = INCLUDE_PATH . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'Multilang' . DIRECTORY_SEPARATOR . 'dictionary.php';
-		if (!is_dir(dirname($dictionaryFile)))
-			mkdir(dirname($dictionaryFile), 0777, true);
-
-		$this->trigger('changedDictionary');
-
-		if (!isset($this->dictionary['main'])) {
-			$this->dictionary['main'] = [
-				'words' => [],
-				'accessLevel' => 'user',
-			];
-		}
-
-		return (bool)file_put_contents($dictionaryFile, "<?php\n\$this->dictionary = " . var_export($this->dictionary, true) . ";\n");
-	}
-
-	/**
-	 * @param string $section
-	 * @param string $word
-	 * @param string $lang
-	 * @param string $value
-	 * @return bool
-	 * @throws \Model\Core\Exception
-	 */
-	public function updateWord(string $section, string $word, string $lang, string $value): bool
-	{
-		$this->getDictionary();
-		if (!isset($this->dictionary[$section]['words'][$word]))
-			$this->model->error('Word not found');
-
-		$this->dictionary[$section]['words'][$word][$lang] = $value;
-		return $this->saveDictionary();
-	}
-
-	/**
 	 * @param string $word
 	 * @param string|null $lang
 	 * @return string
 	 */
 	public function word(string $word, ?string $lang = null): string
 	{
-		if (!$lang)
-			$lang = $this->lang;
-		if (!in_array($lang, $this->langs))
-			$this->model->error('Unsupported lang ' . $lang);
-
-		$word = explode('.', $word);
-		if (count($word) > 2)
-			$this->model->error('There can\'t be more than one dot (.) character in dictionary word');
-
-		$dictionary = $this->getDictionary();
-
-		$word_arr = null;
-
-		if (count($word) == 1) {
-			foreach ($dictionary as $sectionIdx => $section) {
-				if (isset($section['words'][$word[0]])) {
-					$word_arr = $section['words'][$word[0]];
-					break;
-				}
-			}
-		} else {
-			if (!isset($dictionary[$word[0]]))
-				$this->model->error('There is no dictionary section named "' . $word[0] . '"');
-
-			if (isset($dictionary[$word[0]]['words'][$word[1]]))
-				$word_arr = $dictionary[$word[0]]['words'][$word[1]];
-		}
-
-		if ($word_arr) {
-			$possibleLangs = [
-				$lang,
-			];
-			foreach ($this->options['fallback'] as $l) {
-				if (!in_array($l, $possibleLangs))
-					$possibleLangs[] = $l;
-			}
-
-			foreach ($possibleLangs as $l) {
-				if ($word_arr[$l] ?? '')
-					return $word_arr[$l];
-			}
-
-			return '';
-		} else {
-			return '';
-		}
-	}
-
-	/**
-	 * @param string $section
-	 * @return bool
-	 */
-	public function isUserAuthorized(string $section): bool
-	{
-		$this->getDictionary();
-
-		if (!isset($this->dictionary[$section]))
-			return false;
-
-		return (bool)($this->dictionary[$section]['accessLevel'] === 'user' or DEBUG_MODE);
-	}
-
-	/**
-	 * @param string $section
-	 * @param string $word
-	 * @return bool
-	 */
-	public function deleteWord(string $section, string $word): bool
-	{
-		$this->getDictionary();
-		if (!isset($this->dictionary[$section]))
-			return false;
-		if (!isset($this->dictionary[$section]['words'][$word]))
-			return false;
-		unset($this->dictionary[$section]['words'][$word]);
-
-		return $this->saveDictionary();
+		return Dictionary::get($word, $lang);
 	}
 
 	/**
@@ -402,13 +205,15 @@ class Multilang extends Module
 		if (array_key_exists($table, $this->tables))
 			return true;
 
-		$config = parent::retrieveConfig();
+		$config = Ml::getConfig();
 		if (array_key_exists($table, $config['tables']) or in_array($table, $config['tables']))
 			return true;
+
 		$config['tables'][] = $table;
 
+		\Model\Config\Config::set('multilang', $config);
+
 		$configClass = new Config($this->model);
-		$configClass->saveConfig('config', $config);
 		return $configClass->makeCache();
 	}
 }
