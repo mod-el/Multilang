@@ -41,7 +41,7 @@ class Config extends Module_Config
 			$config['fallback'] = [$config['default']];
 
 		$newTablesArray = [];
-		foreach ($config['tables'] as $table => $tableData) {
+		foreach ($config['tables']['primary'] as $table => $tableData) {
 			if (is_numeric($table) and is_string($tableData)) {
 				$table = $tableData;
 				$tableData = [];
