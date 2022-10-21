@@ -195,25 +195,4 @@ class Multilang extends Module
 	{
 		return Dictionary::get($word, $lang);
 	}
-
-	/**
-	 * @param string $table
-	 * @return bool
-	 */
-	public function checkAndInsertTable(string $table): bool
-	{
-		if (array_key_exists($table, $this->tables))
-			return true;
-
-		$config = Ml::getConfig();
-		if (array_key_exists($table, $config['tables']) or in_array($table, $config['tables']))
-			return true;
-
-		$config['tables'][] = $table;
-
-		\Model\Config\Config::set('multilang', $config);
-
-		$configClass = new Config($this->model);
-		return $configClass->makeCache();
-	}
 }
