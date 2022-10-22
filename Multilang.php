@@ -52,7 +52,6 @@ class Multilang extends Module
 		$this->options = array_merge($config, $options);
 
 		$this->langs = $this->options['langs'];
-		$this->tables = $this->options['tables'];
 
 		if ($this->options['type'] == 'session') {
 			if (isset($_GET['mlang']) and in_array($_GET['mlang'], $this->langs))
@@ -160,30 +159,6 @@ class Multilang extends Module
 		} else {
 			$this->model->error('Language not recognized.');
 		}
-	}
-
-	/**
-	 * @param string $table
-	 * @return null|string
-	 */
-	public function getTableFor(string $table)
-	{
-		if (array_key_exists($table, $this->tables))
-			return $table . $this->tables[$table]['suffix'];
-		else
-			return null;
-	}
-
-	/**
-	 * @param string $table
-	 * @return mixed|null
-	 */
-	public function getTableOptionsFor(string $table)
-	{
-		if (array_key_exists($table, $this->tables))
-			return $this->tables[$table];
-		else
-			return null;
 	}
 
 	/**

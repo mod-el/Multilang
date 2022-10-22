@@ -40,38 +40,6 @@ class Config extends Module_Config
 		if (!$config['fallback'])
 			$config['fallback'] = [$config['default']];
 
-		$newTablesArray = [];
-		foreach ($config['tables']['primary'] as $table => $tableData) {
-			if (is_numeric($table) and is_string($tableData)) {
-				$table = $tableData;
-				$tableData = [];
-			}
-			if (!isset($tableData['fields']))
-				$tableData = ['fields' => $tableData];
-
-			$tableData = array_merge([
-				'keyfield' => 'parent',
-				'lang' => 'lang',
-				'suffix' => '_texts',
-				'fields' => [],
-			], $tableData);
-
-			if (count($tableData['fields']) === 0) {
-				try {
-					$tableModel = $this->model->_Db->getTable($table . $tableData['suffix']);
-					foreach ($tableModel->columns as $columnName => $column) {
-						if (in_array($columnName, $tableModel->primary) or $columnName === $tableData['keyfield'] or $columnName === $tableData['lang'])
-							continue;
-						$tableData['fields'][] = $columnName;
-					}
-				} catch (\Exception $e) {
-				}
-			}
-
-			$newTablesArray[$table] = $tableData;
-		}
-		$config['tables'] = $newTablesArray;
-
 		return (bool)file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'config.php', '<?php
 $config = ' . var_export($config, true) . ';
 ');
