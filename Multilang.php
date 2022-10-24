@@ -6,7 +6,6 @@ use Model\Core\Globals;
 class Multilang extends Module
 {
 	public string $lang;
-	public array $langs;
 	public array $tables = [];
 	public array $options = [];
 
@@ -51,10 +50,8 @@ class Multilang extends Module
 
 		$this->options = array_merge($config, $options);
 
-		$this->langs = $this->options['langs'];
-
 		if ($this->options['type'] == 'session') {
-			if (isset($_GET['mlang']) and in_array($_GET['mlang'], $this->langs))
+			if (isset($_GET['mlang']) and in_array($_GET['mlang'], Ml::getLangs()))
 				$_SESSION['zk-lang'] = $_GET['mlang'];
 
 			if (!isset($_SESSION['zk-lang'])) {
@@ -104,7 +101,7 @@ class Multilang extends Module
 			$this->trigger('browserLanguage', ['lang' => $browserLang]);
 		}
 
-		if ($browserLang and in_array($browserLang, $this->langs))
+		if ($browserLang and in_array($browserLang, Ml::getLangs()))
 			return $browserLang;
 		else
 			return $this->options['default'];
@@ -116,7 +113,7 @@ class Multilang extends Module
 	 */
 	public function setLang(string $l): bool
 	{
-		if (!in_array($l, $this->langs))
+		if (!in_array($l, Ml::getLangs()))
 			return false;
 		$this->trigger('setLang', ['lang' => $l]);
 		$this->lang = $l;
@@ -134,7 +131,7 @@ class Multilang extends Module
 		if (!isset($tags['lang']) or $this->options['type'] != 'url')
 			return '';
 
-		if ($tags['lang'] === $this->getDefaultLang() or !in_array($tags['lang'], $this->langs))
+		if ($tags['lang'] === $this->getDefaultLang() or !in_array($tags['lang'], Ml::getLangs()))
 			return '';
 
 		return $tags['lang'];
@@ -147,7 +144,7 @@ class Multilang extends Module
 	 */
 	public function getController(array $request, string $rule): ?array
 	{
-		if ($this->options['type'] === 'url' and in_array($rule, $this->langs) and $request[0] === $rule) {
+		if ($this->options['type'] === 'url' and in_array($rule, Ml::getLangs()) and $request[0] === $rule) {
 			$this->setLang($rule);
 			array_shift($request);
 

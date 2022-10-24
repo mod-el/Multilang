@@ -2,6 +2,7 @@
 
 use Model\Admin\AdminPage;
 use Model\Multilang\Dictionary;
+use Model\Multilang\Ml;
 
 class ModElDictionary extends AdminPage
 {
@@ -53,7 +54,7 @@ class ModElDictionary extends AdminPage
 
 	public function changeAdminLang(array $payload)
 	{
-		if (empty($payload['lang']) or !in_array($payload['lang'], $this->model->_Multilang->langs))
+		if (empty($payload['lang']) or !in_array($payload['lang'], Ml::getLangs()))
 			$this->model->error('Invalid lang');
 
 		setcookie('admin-lang', $payload['lang'], time() + 60 * 60 * 24 * 365 * 10, $this->model->_AdminFront->getUrlPrefix());

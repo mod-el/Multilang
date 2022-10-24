@@ -117,7 +117,7 @@
 		<select onchange="this.getValue().then(l => changeAdminLang(l))">
 			<option value=""></option>
 			<?php
-			foreach ($this->model->_Multilang->langs as $l) {
+			foreach (\Model\Multilang\Ml::getLangs() as $l) {
 				?>
 				<option value="<?= entities($l) ?>"<?= $l == $this->model->_Multilang->lang ? ' selected' : '' ?>><?= entities(ucwords($l)) ?></option>
 				<?php
@@ -147,7 +147,7 @@
 						<b><?= $this->word('multilang.label') ?></b>
 					</td>
 					<?php
-					foreach ($this->model->_Multilang->langs as $l) {
+					foreach (\Model\Multilang\Ml::getLangs() as $l) {
 						?>
 						<td><b><?= strtoupper($l) ?></b></td>
 						<?php
@@ -161,7 +161,7 @@
 						<input type="text" form="new-word-<?= $sectionIdx ?>" placeholder="<?= $this->word('multilang.new') ?>" data-word/>
 					</td>
 					<?php
-					foreach ($this->model->_Multilang->langs as $l) {
+					foreach (\Model\Multilang\Ml::getLangs() as $l) {
 						?>
 						<td>
 							<input type="text" form="new-word-<?= $sectionIdx ?>" data-lang="<?= $l ?>" value=""/>
@@ -183,7 +183,7 @@
 						</td>
 						<td><b><?= entities($word) ?></b></td>
 						<?php
-						foreach ($this->model->_Multilang->langs as $l) {
+						foreach (\Model\Multilang\Ml::getLangs() as $l) {
 							?>
 							<td>
 								<input type="text" name="<?= entities($word) ?>-<?= entities($l) ?>"
