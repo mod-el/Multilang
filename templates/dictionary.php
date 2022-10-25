@@ -119,7 +119,7 @@
 			<?php
 			foreach (\Model\Multilang\Ml::getLangs() as $l) {
 				?>
-				<option value="<?= entities($l) ?>"<?= $l == $this->model->_Multilang->lang ? ' selected' : '' ?>><?= entities(ucwords($l)) ?></option>
+				<option value="<?= entities($l) ?>"<?= $l == \Model\Multilang\Ml::getLang() ? ' selected' : '' ?>><?= entities(ucwords($l)) ?></option>
 				<?php
 			}
 			?>

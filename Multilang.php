@@ -5,8 +5,6 @@ use Model\Core\Globals;
 
 class Multilang extends Module
 {
-	public string $lang;
-	public array $tables = [];
 	public array $options = [];
 
 	/**
@@ -63,10 +61,7 @@ class Multilang extends Module
 				setcookie('mlang', $_SESSION['zk-lang'], time() + 60 * 60 * 24 * 90, PATH);
 			}
 
-			$this->setLang($_SESSION['zk-lang']);
-		} else {
-			if (!isset($this->lang))
-				$this->setLang($this->getDefaultLang());
+			Ml::setLang($_SESSION['zk-lang']);
 		}
 
 		return true;
@@ -108,20 +103,6 @@ class Multilang extends Module
 	}
 
 	/**
-	 * @param string $l
-	 * @return bool
-	 */
-	public function setLang(string $l): bool
-	{
-		if (!in_array($l, Ml::getLangs()))
-			return false;
-		$this->trigger('setLang', ['lang' => $l]);
-		$this->lang = $l;
-		Ml::setLang($l);
-		return true;
-	}
-
-	/**
 	 * @param array $tags
 	 * @param array $opt
 	 * @return mixed|string
@@ -145,7 +126,7 @@ class Multilang extends Module
 	public function getController(array $request, string $rule): ?array
 	{
 		if ($this->options['type'] === 'url' and in_array($rule, Ml::getLangs()) and $request[0] === $rule) {
-			$this->setLang($rule);
+			Ml::setLang($rule);
 			array_shift($request);
 
 			return [
