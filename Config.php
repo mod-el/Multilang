@@ -10,7 +10,7 @@ class Config extends Module_Config
 	 */
 	public function getRules(): array
 	{
-		$config = Ml::getConfig();
+		$config = \Model\Config\Config::get('multilang');
 		$rules = [];
 
 		if ($config and ($config['type'] ?? 'url') === 'url') {
@@ -29,7 +29,7 @@ class Config extends Module_Config
 	 */
 	public function makeCache(): bool
 	{
-		$config = Ml::getConfig();
+		$config = \Model\Config\Config::get('multilang');
 
 		if (!in_array($config['type'], ['url', 'session']))
 			$this->model->error('Unknown type for Multilang module');
