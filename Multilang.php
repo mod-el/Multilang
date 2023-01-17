@@ -56,7 +56,7 @@ class Multilang extends Module
 				if (isset($_COOKIE['mlang']))
 					$_SESSION['zk-lang'] = $_COOKIE['mlang'];
 				else
-					$_SESSION['zk-lang'] = $this->getDefaultLang();
+					$_SESSION['zk-lang'] = Ml::getDefaultLang();
 
 				setcookie('mlang', $_SESSION['zk-lang'], time() + 60 * 60 * 24 * 90, PATH);
 			}
@@ -86,23 +86,6 @@ class Multilang extends Module
 	}
 
 	/**
-	 * @return string
-	 */
-	private function getDefaultLang(): string
-	{
-		$browserLang = null;
-		if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-			$browserLang = strtolower(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2));
-			$this->trigger('browserLanguage', ['lang' => $browserLang]);
-		}
-
-		if ($browserLang and in_array($browserLang, Ml::getLangs()))
-			return $browserLang;
-		else
-			return $this->options['default'];
-	}
-
-	/**
 	 * @param array $tags
 	 * @param array $opt
 	 * @return mixed|string
@@ -112,7 +95,7 @@ class Multilang extends Module
 		if (!isset($tags['lang']) or $this->options['type'] != 'url')
 			return '';
 
-		if ($tags['lang'] === $this->getDefaultLang() or !in_array($tags['lang'], Ml::getLangs()))
+		if ($tags['lang'] === Ml::getDefaultLang() or !in_array($tags['lang'], Ml::getLangs()))
 			return '';
 
 		return $tags['lang'];
