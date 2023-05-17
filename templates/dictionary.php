@@ -1,4 +1,4 @@
-<script type="text/javascript">
+<script>
 	window.editWord = async function (field, section, word, l) {
 		field.style.background = '#DDD';
 		return adminApiRequest('page/model-dictionary/edit-word', {
