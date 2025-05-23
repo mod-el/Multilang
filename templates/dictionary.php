@@ -128,7 +128,7 @@
 	<h1><?= $this->word('multilang.dictionary') ?></h1>
 
 	<?php
-	$dictionary = \Model\Multilang\Dictionary::getFull(false);
+	$dictionary = \Model\Multilang\Dictionary::getFull(['use_cache' => false]);
 
 	foreach ($dictionary as $sectionIdx => $section) {
 		if (!\Model\Multilang\Dictionary::isUserAuthorized($sectionIdx))
